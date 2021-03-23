@@ -41,7 +41,10 @@ declare module "jowebutils.forms.Form" {
     export interface OwlEvent extends Event {
         detail: any;
     }
-    export class Form extends Component<any, IOWLEnv> {
+    export interface IFormProps {
+        initialValues: IValues;
+    }
+    export class Form extends Component<IFormProps, IOWLEnv> {
         formContext: IFormContext;
         constructor();
         setValues(values: IValues): void;

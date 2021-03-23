@@ -173,7 +173,6 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> {
 class FieldWrapper extends Component<IFieldProps> {}
 FieldWrapper.template = tags.xml /* xml */ `
     <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
-            + (props.field.required ? ' joweb-field-required' : '')
             + (props.field.invisible ? ' d-none' : '')">
         <label t-if="!props.field.invisible" t-att-for="props.field.name"
             class="col-sm-4 col-form-label"
@@ -201,10 +200,17 @@ CharField.template = tags.xml /* xml */ `
             t-att-value="formattedValue"
             t-on-change="onChange"
         />
+        <div t-if="!props.field.readonly">
+            <small t-if="props.field.required" class="form-text text-muted">Required</small>
+            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
         <div
             t-if="props.field.readonly"
-            class="form-control-plaintext">
+            class="form-control disabled">
             <t t-esc="formattedValue" />
+        </div>
+        <div t-if="props.field.readonly">
+            <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
 `
@@ -222,10 +228,17 @@ BooleanField.template = tags.xml /* xml */ `
             t-att-checked="rawValue"
             t-on-change="onChange"
         />
+        <div t-if="!props.field.readonly">
+            <small t-if="props.field.required" class="form-text text-muted">Required</small>
+            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
         <div
             t-if="props.field.readonly"
-            class="form-control-plaintext">
+            class="form-control disabled">
             <t t-esc="formattedValue" />
+        </div>
+        <div t-if="props.field.readonly">
+            <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
 `

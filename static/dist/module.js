@@ -69,9 +69,10 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             super(...arguments);
             const setValues = this.setValues.bind(this);
             const formContextData = {
-                values: {},
+                values: this.props.initialValues,
                 setValues
             };
+            console.log('formData', formContextData);
             const formContextContainer = new owl_2.Context(formContextData);
             this.env.formContext = formContextContainer;
             this.formContext = formContextContainer.state;
@@ -169,7 +170,6 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     }
     FieldWrapper.template = owl_3.tags.xml /* xml */ `
     <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
-            + (props.field.required ? ' joweb-field-required' : '')
             + (props.field.invisible ? ' d-none' : '')">
         <label t-if="!props.field.invisible" t-att-for="props.field.name"
             class="col-sm-4 col-form-label"
@@ -198,10 +198,17 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-value="formattedValue"
             t-on-change="onChange"
         />
+        <div t-if="!props.field.readonly">
+            <small t-if="props.field.required" class="form-text text-muted">Required</small>
+            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
         <div
             t-if="props.field.readonly"
-            class="form-control-plaintext">
+            class="form-control disabled">
             <t t-esc="formattedValue" />
+        </div>
+        <div t-if="props.field.readonly">
+            <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
 `;
@@ -221,10 +228,17 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-checked="rawValue"
             t-on-change="onChange"
         />
+        <div t-if="!props.field.readonly">
+            <small t-if="props.field.required" class="form-text text-muted">Required</small>
+            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
         <div
             t-if="props.field.readonly"
-            class="form-control-plaintext">
+            class="form-control disabled">
             <t t-esc="formattedValue" />
+        </div>
+        <div t-if="props.field.readonly">
+            <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
 `;

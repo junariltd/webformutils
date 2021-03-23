@@ -14,16 +14,21 @@ export interface OwlEvent extends Event {
     detail: any;
 }
 
-export class Form extends Component<any, IOWLEnv> {
+export interface IFormProps {
+    initialValues: IValues;
+}
+
+export class Form extends Component<IFormProps, IOWLEnv> {
     formContext: IFormContext;
 
     constructor() {
         super(...arguments);
         const setValues = this.setValues.bind(this);
         const formContextData = {
-            values: {},  // TODO: Accept "initialValues" prop
+            values: this.props.initialValues,
             setValues
         };
+        console.log('formData', formContextData);
         const formContextContainer = new Context(formContextData);
         this.env.formContext = formContextContainer;
         this.formContext = formContextContainer.state;

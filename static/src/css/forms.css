@@ -18,3 +18,8 @@
 .joweb-html-field-content p {
     margin: 0;
 }
+
+.form-control.disabled{
+    background-color: #e9ecef !important;
+    opacity: 1;
+}
