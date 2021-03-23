@@ -172,13 +172,13 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
             + (props.field.invisible ? ' d-none' : '')">
         <label t-if="!props.field.invisible" t-att-for="props.field.name"
-            class="col-sm-4 col-form-label"
+            class="col-sm-3 col-form-label"
             t-att-data-toggle="props.field.tooltip ? 'tooltip' : ''"
             t-att-data-placement="props.field.tooltip ? 'top' : ''"
             t-att-title="props.field.tooltip">
             <t t-esc="props.field.string"/>
         </label>
-        <div class="col-sm-8">
+        <div class="col-sm-9">
             <t t-slot="default"/>
         </div>
     </div>
@@ -197,6 +197,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-required="props.field.required"
             t-att-value="formattedValue"
             t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
         />
         <div t-if="!props.field.readonly">
             <small t-if="props.field.required" class="form-text text-muted">Required</small>
