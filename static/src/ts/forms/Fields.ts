@@ -37,13 +37,10 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> {
             value: null
         });
         this.form = hooks.useContext(this.env.formContext);
-        console.log('Field:', this.props);
-        console.log('Context:', this.form);
     }
 
     onChange(ev: Event) {
         const input = ev.target as HTMLInputElement;
-        console.log('field changed value', input.value);
         this.setValue(input.value);
     }
 

@@ -28,14 +28,12 @@ export class Form extends Component<IFormProps, IOWLEnv> {
             values: this.props.initialValues,
             setValues
         };
-        console.log('formData', formContextData);
         const formContextContainer = new Context(formContextData);
         this.env.formContext = formContextContainer;
         this.formContext = formContextContainer.state;
     }
 
     setValues(values: IValues) {
-        console.log('form setValues', values);
         Object.assign(this.formContext.values, values);
         this.valuesChanged(Object.keys(values));
     }
@@ -49,7 +47,6 @@ export class Form extends Component<IFormProps, IOWLEnv> {
 
     onSubmit(ev: Event) {
         ev.preventDefault();
-        console.log('form onSubmit. Values: ', this.formContext.values);
         // Call custom 'submitted' event handler, if registered.
         this.trigger('submitted', { values: this.formContext.values });
     }

@@ -72,13 +72,11 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
                 values: this.props.initialValues,
                 setValues
             };
-            console.log('formData', formContextData);
             const formContextContainer = new owl_2.Context(formContextData);
             this.env.formContext = formContextContainer;
             this.formContext = formContextContainer.state;
         }
         setValues(values) {
-            console.log('form setValues', values);
             Object.assign(this.formContext.values, values);
             this.valuesChanged(Object.keys(values));
         }
@@ -90,7 +88,6 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
         }
         onSubmit(ev) {
             ev.preventDefault();
-            console.log('form onSubmit. Values: ', this.formContext.values);
             // Call custom 'submitted' event handler, if registered.
             this.trigger('submitted', { values: this.formContext.values });
         }
@@ -114,12 +111,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 value: null
             });
             this.form = owl_3.hooks.useContext(this.env.formContext);
-            console.log('Field:', this.props);
-            console.log('Context:', this.form);
         }
         onChange(ev) {
             const input = ev.target;
-            console.log('field changed value', input.value);
             this.setValue(input.value);
         }
         setValue(value) {
