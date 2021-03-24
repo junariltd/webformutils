@@ -297,6 +297,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         <t t-if="props.field.type == 'selection'">
             <SelectField field="props.field"/>
         </t>
+        <t t-if="props.field.type == 'many2one'">
+            <CharField field="props.field"/>
+        </t>
     </div>
 `;
 });

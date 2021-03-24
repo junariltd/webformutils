@@ -296,5 +296,8 @@ FormField.template = tags.xml /* xml */ `
         <t t-if="props.field.type == 'selection'">
             <SelectField field="props.field"/>
         </t>
+        <t t-if="props.field.type == 'many2one'">
+            <CharField field="props.field"/>
+        </t>
     </div>
 `
