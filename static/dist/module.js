@@ -106,7 +106,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
 define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function (require, exports, owl_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.BooleanField = exports.CharField = exports.BaseField = void 0;
+    exports.FormField = exports.SelectField = exports.BooleanField = exports.CharField = exports.BaseField = void 0;
     class BaseField extends owl_3.Component {
         constructor() {
             super(...arguments);
@@ -242,5 +242,61 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
+`;
+    class SelectField extends BaseField {
+    }
+    exports.SelectField = SelectField;
+    SelectField.components = { FieldWrapper };
+    SelectField.template = owl_3.tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <select
+            t-if="!props.field.readonly"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+        >
+            <t t-foreach="props.field.selection" t-as="selectField">
+                <t t-if="selectField[1] == formattedValue">
+                    <option t-att-value="selectField[0]" selected="1"><t t-esc="selectField[1]"/></option>
+                </t>
+                <t t-if="selectField[1] != formattedValue">
+                    <option t-att-value="selectField[0]"><t t-esc="selectField[1]"/></option>
+                </t>
+                
+            </t>
+        </select>
+        <div t-if="!props.field.readonly">
+            <small t-if="props.field.required" class="form-text text-muted">Required</small>
+            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
+        <div
+            t-if="props.field.readonly"
+            class="form-control disabled">
+            <t t-esc="formattedValue" />
+        </div>
+        <div t-if="props.field.readonly">
+            <small class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
+    </FieldWrapper>
+`;
+    class FormField extends owl_3.Component {
+    }
+    exports.FormField = FormField;
+    FormField.components = { CharField, BooleanField, SelectField };
+    FormField.template = owl_3.tags.xml /* xml */ `
+    <div>
+        <t t-if="props.field.type == 'char'">
+            <CharField field="props.field"/>
+        </t>
+        <t t-if="props.field.type == 'boolean'">
+            <BooleanField field="props.field"/>
+        </t>
+        <t t-if="props.field.type == 'selection'">
+            <SelectField field="props.field"/>
+        </t>
+    </div>
 `;
 });

@@ -244,3 +244,57 @@ BooleanField.template = tags.xml /* xml */ `
         </div>
     </FieldWrapper>
 `
+
+export class SelectField extends BaseField {}
+SelectField.components = { FieldWrapper }
+SelectField.template = tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <select
+            t-if="!props.field.readonly"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+        >
+            <t t-foreach="props.field.selection" t-as="selectField">
+                <t t-if="selectField[1] == formattedValue">
+                    <option t-att-value="selectField[0]" selected="1"><t t-esc="selectField[1]"/></option>
+                </t>
+                <t t-if="selectField[1] != formattedValue">
+                    <option t-att-value="selectField[0]"><t t-esc="selectField[1]"/></option>
+                </t>
+                
+            </t>
+        </select>
+        <div t-if="!props.field.readonly">
+            <small t-if="props.field.required" class="form-text text-muted">Required</small>
+            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
+        <div
+            t-if="props.field.readonly"
+            class="form-control disabled">
+            <t t-esc="formattedValue" />
+        </div>
+        <div t-if="props.field.readonly">
+            <small class="form-text text-muted" style="color: transparent !important;">_</small>
+        </div>
+    </FieldWrapper>
+`
+
+export class FormField extends Component<IFieldProps, IOWLEnv>{}
+FormField.components = { CharField, BooleanField, SelectField }
+FormField.template = tags.xml /* xml */ `
+    <div>
+        <t t-if="props.field.type == 'char'">
+            <CharField field="props.field"/>
+        </t>
+        <t t-if="props.field.type == 'boolean'">
+            <BooleanField field="props.field"/>
+        </t>
+        <t t-if="props.field.type == 'selection'">
+            <SelectField field="props.field"/>
+        </t>
+    </div>
+`

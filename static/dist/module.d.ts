@@ -90,4 +90,8 @@ declare module "jowebutils.forms.Fields" {
     }
     export class BooleanField extends BaseField {
     }
+    export class SelectField extends BaseField {
+    }
+    export class FormField extends Component<IFieldProps, IOWLEnv> {
+    }
 }
