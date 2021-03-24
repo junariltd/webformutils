@@ -103,7 +103,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
 define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function (require, exports, owl_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FormField = exports.SelectField = exports.BooleanField = exports.CharField = exports.BaseField = void 0;
+    exports.FormField = exports.TagField = exports.SelectField = exports.BooleanField = exports.CharField = exports.BaseField = void 0;
     class BaseField extends owl_3.Component {
         constructor() {
             super(...arguments);
@@ -276,10 +276,22 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </div>
     </FieldWrapper>
 `;
+    class TagField extends BaseField {
+    }
+    exports.TagField = TagField;
+    TagField.components = { FieldWrapper };
+    TagField.template = owl_3.tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <div class="form-control">
+            <span class="badge badge-pill badge-primary"><t t-esc="formattedValue"/></span>
+        </div>
+        <small t-if="props.field.required" class="form-text text-muted">Required</small>
+    </FieldWrapper>
+`;
     class FormField extends owl_3.Component {
     }
     exports.FormField = FormField;
-    FormField.components = { CharField, BooleanField, SelectField };
+    FormField.components = { CharField, BooleanField, SelectField, TagField };
     FormField.template = owl_3.tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -294,6 +306,78 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         <t t-if="props.field.type == 'many2one'">
             <CharField field="props.field"/>
         </t>
+        <t t-if="props.field.type == 'tag'">
+            <TagField field="props.field"/>
+        </t>
     </div>
 `;
 });
+///<amd-module name='jowebutils.forms.TagFieldInput'/>
+define("jowebutils.forms.TagFieldInput", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+});
+//NEEDS CONVERSION
+// export class TagInputField {
+//   contextInput: JQuery<HTMLElement>;
+//   tagInputContainer: JQuery<HTMLElement>;
+//   tagInput: JQuery<HTMLElement>;
+//   tagInputColorClass: BootstrapTagInputColors;
+//   placeholder: string;
+//   constructor(contextInput: JQuery<HTMLElement>, colorClass: BootstrapTagInputColors = 'primary') {
+//     this.contextInput = contextInput;
+//     this.contextInput.prop('hidden', true);
+//     this.placeholder = this.contextInput.attr('placeholder') ?? '';
+//     this.contextInput.after(`
+//     <div class="bootstrap-tag-input-container">
+//       <input class="bootstrap-tag-input" placeholder="${this.placeholder}">
+//     </div>
+//     `);
+//     this.tagInputContainer = this.contextInput.next();
+//     this.tagInput = this.tagInputContainer.children();
+//     this.tagInputColorClass = colorClass;
+//     this.initHandler();
+//   }
+//   private initHandler(): void {
+//     this.tagInputContainer.click(() => {
+//       this.tagInput.focus();
+//     });
+//     this.tagInput.keydown((e) => {
+//       switch (e.keyCode) {
+//         case 9:
+//         case 13:
+//           e.preventDefault();
+//           if (this.tagInput.val()) {
+//             this.createTag(String(this.tagInput.val()));
+//             this.tagInput.removeAttr('placeholder');
+//             this.tagInput.val('');
+//           }
+//           break;
+//         case 8:
+//           if (!this.tagInput.val()) {
+//             this.tagInputContainer.find('.badge').last().remove();
+//             this.serialize();
+//           }
+//           if (this.tagInputContainer.find('.badge').length == 0) this.tagInput.attr('placeholder', this.placeholder);
+//           break;
+//       }
+//     });
+//   }
+//   private serialize(): void {
+//     let serializedString: string = '';
+//     this.tagInputContainer.children('.badge').each((index, el) => {
+//       serializedString += `${$(el).text()};`;
+//     });
+//     this.contextInput.val(serializedString);
+//   }
+//   public createTag(label: string): void {
+//     const template: string = `<p class="badge badge-pill badge-${this.tagInputColorClass} tag-badge">${label}<span>&times;</span></p>`;
+//     this.tagInput.before(template);
+//     const newBadge = this.tagInput.prev();
+//     newBadge.find('span').click(() => {
+//       newBadge.remove();
+//       this.serialize();
+//     });
+//     this.serialize();
+//   }
+// }

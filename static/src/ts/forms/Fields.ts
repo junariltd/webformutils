@@ -5,7 +5,7 @@ import { IOWLEnv } from '../owl_env';
 import { IFormContext } from './Form';
 
 export type FieldType = 'char' | 'text' | 'date' | 'datetime' |
-    'selection' | 'many2one' | 'boolean' | 'html' | 'attachments';
+    'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag';
 
 export interface IFieldMeta {
     name: string;
@@ -280,8 +280,19 @@ SelectField.template = tags.xml /* xml */ `
     </FieldWrapper>
 `
 
+export class TagField extends BaseField {}
+TagField.components = { FieldWrapper }
+TagField.template = tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <div class="form-control">
+            <span class="badge badge-pill badge-primary"><t t-esc="formattedValue"/></span>
+        </div>
+        <small t-if="props.field.required" class="form-text text-muted">Required</small>
+    </FieldWrapper>
+`
+
 export class FormField extends Component<IFieldProps, IOWLEnv>{}
-FormField.components = { CharField, BooleanField, SelectField }
+FormField.components = { CharField, BooleanField, SelectField, TagField }
 FormField.template = tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -295,6 +306,9 @@ FormField.template = tags.xml /* xml */ `
         </t>
         <t t-if="props.field.type == 'many2one'">
             <CharField field="props.field"/>
+        </t>
+        <t t-if="props.field.type == 'tag'">
+            <TagField field="props.field"/>
         </t>
     </div>
 `
