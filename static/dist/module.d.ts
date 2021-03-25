@@ -98,4 +98,21 @@ declare module "jowebutils.forms.Fields" {
     }
 }
 /// <amd-module name="jowebutils.forms.TagFieldInput" />
-declare module "jowebutils.forms.TagFieldInput" { }
+declare module "jowebutils.forms.TagFieldInput" {
+    import { Component } from '@odoo/owl';
+    import { IFieldProps, IFieldState } from "jowebutils.forms.Fields";
+    import { IOWLEnv } from "jowebutils.owl_env";
+    import { IFormContext } from "jowebutils.forms.Form";
+    export interface ITagState extends IFieldState {
+        value: any;
+        colour: any;
+    }
+    export class TagInputField extends Component<IFieldProps, IOWLEnv> {
+        state: ITagState;
+        form: IFormContext;
+        input: HTMLInputElement;
+        constructor();
+        onChange(ev: Event): void;
+        setValue(value: any): void;
+    }
+}
