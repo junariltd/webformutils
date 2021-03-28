@@ -116,3 +116,19 @@ declare module "jowebutils.forms.TagFieldInput" {
         setValue(value: any): void;
     }
 }
+/// <amd-module name="jowebutils.widgets.NavBar" />
+declare module "jowebutils.widgets.NavBar" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    export interface INavBarBreadcrumb {
+        string: string;
+        destination?: any;
+        external?: boolean;
+    }
+    export interface INavBarProps {
+        breadcrumbs: INavBarBreadcrumb[];
+    }
+    export class NavBar extends Component<INavBarProps, IOWLEnv> {
+        onClickBreadcrumb(ev: any): void;
+    }
+}
