@@ -35,7 +35,8 @@ define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rp
                 env.session = session;
             },
             initOWLQWeb: async function () {
-                const qweb = new owl_1.QWeb();
+                const env = this.owl_component.env;
+                const qweb = env.qweb;
                 const loadPromises = [];
                 if (appDef.xmlDependencies) {
                     for (let dep of appDef.xmlDependencies) {
@@ -46,8 +47,6 @@ define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rp
                 for (let templates of templateFiles) {
                     qweb.addTemplates(templates);
                 }
-                const env = this.owl_component.env;
-                env.qweb = qweb;
                 env.loadedXmlDependencies = appDef.xmlDependencies || [];
             },
             start: async function () {

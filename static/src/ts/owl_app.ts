@@ -48,7 +48,8 @@ export function createOWLApp(appDef: OWLAppDefinition) {
         },
 
         initOWLQWeb: async function () {
-            const qweb = new QWeb();
+            const env: IOWLEnv = this.owl_component.env;
+            const qweb = env.qweb;
             const loadPromises = [];
             if (appDef.xmlDependencies) {
                 for (let dep of appDef.xmlDependencies) {
@@ -59,8 +60,6 @@ export function createOWLApp(appDef: OWLAppDefinition) {
             for (let templates of templateFiles) {
                 qweb.addTemplates(templates);
             }
-            const env: IOWLEnv = this.owl_component.env;
-            env.qweb = qweb;
             env.loadedXmlDependencies = appDef.xmlDependencies || [];
         },
 
