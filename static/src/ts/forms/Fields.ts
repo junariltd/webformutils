@@ -20,14 +20,19 @@ export interface IFieldMeta {
 
 export interface IFieldProps {
     field: IFieldMeta;
-    onChange?: () => void;
+}
+
+export type ValidationError = string;
+
+export interface IFieldComponent {
+    validate(): ValidationError[];
 }
 
 export interface IFieldState {
     value: any;
 }
 
-export class BaseField extends Component<IFieldProps, IOWLEnv> {
+export class BaseField extends Component<IFieldProps, IOWLEnv> implements IFieldComponent {
     state: IFieldState;
     form: IFormContext;
 
@@ -37,6 +42,7 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> {
             value: null
         });
         this.form = hooks.useContext(this.env.formContext);
+        this.form.registerField(this.props.field.name, this);
     }
 
     onChange(ev: Event) {
