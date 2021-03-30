@@ -271,6 +271,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
         >
+            <option value=""></option>
             <t t-foreach="props.field.selection" t-as="sel_option">
                 <option
                     t-att-value="sel_option[0]"
