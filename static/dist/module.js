@@ -162,7 +162,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             if (this.props.field.type != 'boolean' && !value) {
                 return '';
             }
-            else if (this.props.field.type == 'selection'
+            else if ((this.props.field.type == 'selection' || this.props.field.type == 'many2many')
                 && this.props.field.selection && value) {
                 const match = this.props.field.selection.find((s) => s[0] == value);
                 if (!match)
