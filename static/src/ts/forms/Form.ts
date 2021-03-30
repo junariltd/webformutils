@@ -40,11 +40,9 @@ export class Form extends Component<IFormProps, IOWLEnv> {
         this.env.formContext = formContextContainer;
         this.formContext = formContextContainer.state;
         this.fields = {};
-        console.log('form initialised');
     }
 
     registerField(name: string, component: IFieldComponent) {
-        console.log('registering field', name);
         this.fields[name] = component;
     }
 
@@ -63,7 +61,17 @@ export class Form extends Component<IFormProps, IOWLEnv> {
     onSubmit(ev: Event) {
         ev.preventDefault();
         // Call custom 'submitted' event handler, if registered.
-        this.trigger('submitted', { values: this.formContext.values });
+        const values = this.formContext.values;
+        const editableValues: IValues = {};
+        for (const field in this.fields) {
+            const meta = this.fields[field].getFieldMeta();
+            if (!meta.readonly) {
+                editableValues[field] = values[field];
+            }
+        }
+        this.trigger('submitted', {
+            values, editableValues
+        });
     }
 
 }

@@ -67,13 +67,19 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
         constructor() {
             super(...arguments);
             const setValues = this.setValues.bind(this);
+            const registerField = this.registerField.bind(this);
             const formContextData = {
                 values: this.props.initialValues,
+                registerField,
                 setValues
             };
             const formContextContainer = new owl_2.Context(formContextData);
             this.env.formContext = formContextContainer;
             this.formContext = formContextContainer.state;
+            this.fields = {};
+        }
+        registerField(name, component) {
+            this.fields[name] = component;
         }
         setValues(values) {
             Object.assign(this.formContext.values, values);
@@ -88,7 +94,17 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
         onSubmit(ev) {
             ev.preventDefault();
             // Call custom 'submitted' event handler, if registered.
-            this.trigger('submitted', { values: this.formContext.values });
+            const values = this.formContext.values;
+            const editableValues = {};
+            for (const field in this.fields) {
+                const meta = this.fields[field].getFieldMeta();
+                if (!meta.readonly) {
+                    editableValues[field] = values[field];
+                }
+            }
+            this.trigger('submitted', {
+                values, editableValues
+            });
         }
     }
     exports.Form = Form;
@@ -110,6 +126,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 value: null
             });
             this.form = owl_3.hooks.useContext(this.env.formContext);
+            this.form.registerField(this.props.field.name, this);
         }
         onChange(ev) {
             const input = ev.target;
@@ -127,6 +144,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 errors.push("Field '" + field.string + "' is required.");
             }
             return errors;
+        }
+        getFieldMeta() {
+            return this.props.field;
         }
         // setMode(mode: string) {
         //     this.state.mode = mode;
@@ -251,14 +271,12 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
         >
-            <t t-foreach="props.field.selection" t-as="selectField">
-                <t t-if="selectField[1] == formattedValue">
-                    <option t-att-value="selectField[0]" selected="1"><t t-esc="selectField[1]"/></option>
-                </t>
-                <t t-if="selectField[1] != formattedValue">
-                    <option t-att-value="selectField[0]"><t t-esc="selectField[1]"/></option>
-                </t>
-                
+            <t t-foreach="props.field.selection" t-as="sel_option">
+                <option
+                    t-att-value="sel_option[0]"
+                    t-att-selected="sel_option[0] == rawValue ? 'selected' :
+                        rawValue != null &amp;&amp; rawValue.length == 2 &amp;&amp; sel_option[0] == rawValue[0] ? 'selected' : false"
+                ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
         <div t-if="!props.field.readonly">
@@ -299,11 +317,8 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         <t t-if="props.field.type == 'boolean'">
             <BooleanField field="props.field"/>
         </t>
-        <t t-if="props.field.type == 'selection'">
+        <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField field="props.field"/>
-        </t>
-        <t t-if="props.field.type == 'many2one'">
-            <CharField field="props.field"/>
         </t>
         <t t-if="props.field.type == 'many2many'">
             <TagField field="props.field"/>

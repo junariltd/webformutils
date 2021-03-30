@@ -31,12 +31,14 @@ declare module "jowebutils.owl_app" {
 declare module "jowebutils.forms.Form" {
     import { Component } from '@odoo/owl';
     import { IOWLEnv } from "jowebutils.owl_env";
+    import { IFieldComponent } from "jowebutils.forms.Fields";
     export interface IValues {
         [fieldName: string]: any;
     }
     export interface IFormContext {
         values: IValues;
-        setValues: (values: IValues) => void;
+        setValues(values: IValues): void;
+        registerField(name: string, component: IFieldComponent): void;
     }
     export interface OwlEvent extends Event {
         detail: any;
@@ -46,7 +48,11 @@ declare module "jowebutils.forms.Form" {
     }
     export class Form extends Component<IFormProps, IOWLEnv> {
         formContext: IFormContext;
+        fields: {
+            [name: string]: IFieldComponent;
+        };
         constructor();
+        registerField(name: string, component: IFieldComponent): void;
         setValues(values: IValues): void;
         valuesChanged(fieldsChanged: string[]): void;
         onSubmit(ev: Event): void;
@@ -70,18 +76,23 @@ declare module "jowebutils.forms.Fields" {
     }
     export interface IFieldProps {
         field: IFieldMeta;
-        onChange?: () => void;
+    }
+    export type ValidationError = string;
+    export interface IFieldComponent {
+        validate(): ValidationError[];
+        getFieldMeta(): IFieldMeta;
     }
     export interface IFieldState {
         value: any;
     }
-    export class BaseField extends Component<IFieldProps, IOWLEnv> {
+    export class BaseField extends Component<IFieldProps, IOWLEnv> implements IFieldComponent {
         state: IFieldState;
         form: IFormContext;
         constructor();
         onChange(ev: Event): void;
         setValue(value: any): void;
         validate(): string[];
+        getFieldMeta(): IFieldMeta;
         get rawValue(): any;
         get formattedValue(): any;
         formatValue(value: any): any;

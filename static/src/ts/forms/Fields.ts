@@ -26,6 +26,7 @@ export type ValidationError = string;
 
 export interface IFieldComponent {
     validate(): ValidationError[];
+    getFieldMeta(): IFieldMeta;
 }
 
 export interface IFieldState {
@@ -63,6 +64,10 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
             errors.push("Field '" + field.string + "' is required.");
         }
         return errors;
+    }
+
+    getFieldMeta() {
+        return this.props.field;
     }
 
     // setMode(mode: string) {
@@ -261,14 +266,12 @@ SelectField.template = tags.xml /* xml */ `
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
         >
-            <t t-foreach="props.field.selection" t-as="selectField">
-                <t t-if="selectField[1] == formattedValue">
-                    <option t-att-value="selectField[0]" selected="1"><t t-esc="selectField[1]"/></option>
-                </t>
-                <t t-if="selectField[1] != formattedValue">
-                    <option t-att-value="selectField[0]"><t t-esc="selectField[1]"/></option>
-                </t>
-                
+            <t t-foreach="props.field.selection" t-as="sel_option">
+                <option
+                    t-att-value="sel_option[0]"
+                    t-att-selected="sel_option[0] == rawValue ? 'selected' :
+                        rawValue != null &amp;&amp; rawValue.length == 2 &amp;&amp; sel_option[0] == rawValue[0] ? 'selected' : false"
+                ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
         <div t-if="!props.field.readonly">
@@ -307,11 +310,8 @@ FormField.template = tags.xml /* xml */ `
         <t t-if="props.field.type == 'boolean'">
             <BooleanField field="props.field"/>
         </t>
-        <t t-if="props.field.type == 'selection'">
+        <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField field="props.field"/>
-        </t>
-        <t t-if="props.field.type == 'many2one'">
-            <CharField field="props.field"/>
         </t>
         <t t-if="props.field.type == 'many2many'">
             <TagField field="props.field"/>
