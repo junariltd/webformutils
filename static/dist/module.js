@@ -305,7 +305,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         <t t-if="props.field.type == 'many2one'">
             <CharField field="props.field"/>
         </t>
-        <t t-if="props.field.type == 'tag'">
+        <t t-if="props.field.type == 'many2many'">
             <TagField field="props.field"/>
         </t>
     </div>

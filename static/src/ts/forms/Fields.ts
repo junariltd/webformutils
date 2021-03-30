@@ -5,7 +5,7 @@ import { IOWLEnv } from '../owl_env';
 import { IFormContext } from './Form';
 
 export type FieldType = 'char' | 'text' | 'date' | 'datetime' |
-    'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag';
+    'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag' | 'many2many';
 
 export interface IFieldMeta {
     name: string;
@@ -307,7 +307,7 @@ FormField.template = tags.xml /* xml */ `
         <t t-if="props.field.type == 'many2one'">
             <CharField field="props.field"/>
         </t>
-        <t t-if="props.field.type == 'tag'">
+        <t t-if="props.field.type == 'many2many'">
             <TagField field="props.field"/>
         </t>
     </div>

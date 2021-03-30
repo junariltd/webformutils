@@ -57,7 +57,7 @@ declare module "jowebutils.forms.Fields" {
     import { Component } from '@odoo/owl';
     import { IOWLEnv } from "jowebutils.owl_env";
     import { IFormContext } from "jowebutils.forms.Form";
-    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag';
+    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag' | 'many2many';
     export interface IFieldMeta {
         name: string;
         type: FieldType;
