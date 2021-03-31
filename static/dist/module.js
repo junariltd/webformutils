@@ -162,6 +162,10 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             if (this.props.field.type != 'boolean' && !value) {
                 return '';
             }
+            else if ((this.props.field.type == 'many2many') && value) {
+                console.log('value', value);
+                return value;
+            }
             else if ((this.props.field.type == 'selection' || this.props.field.type == 'many2many')
                 && this.props.field.selection && value) {
                 const match = this.props.field.selection.find((s) => s[0] == value);
@@ -299,12 +303,39 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.TagField = TagField;
     TagField.components = { FieldWrapper };
     TagField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
-        <div class="form-control">
-            <span class="badge badge-pill badge-primary"><t t-esc="formattedValue"/></span>
-        </div>
+<FieldWrapper field="props.field">
+    <select multiple="multiple"
+        t-if="!props.field.readonly"
+        class="form-control"
+        t-att-name="props.field.name"
+        t-att-required="props.field.required"
+        t-att-value="formattedValue"
+        t-on-change="onChange"
+        t-att-placeholder="props.field.placeholder"
+        aria-label="multiple select"
+    >
+        <option value=""></option>
+        <t t-foreach="props.field.selection" t-as="sel_option">
+            <option
+                t-att-value="sel_option[0]"
+                t-att-selected="sel_option[0] == rawValue ? 'selected' :
+                    rawValue != null &amp;&amp; rawValue.length == 2 &amp;&amp; sel_option[0] == rawValue[0] ? 'selected' : false"
+            ><t t-esc="sel_option[1]"/></option>
+        </t>
+    </select>
+    <div t-if="!props.field.readonly">
         <small t-if="props.field.required" class="form-text text-muted">Required</small>
-    </FieldWrapper>
+        <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
+    </div>
+    <div
+        t-if="props.field.readonly"
+        class="form-control disabled">
+        <t t-esc="formattedValue" />
+    </div>
+    <div t-if="props.field.readonly">
+        <small class="form-text text-muted" style="color: transparent !important;">_</small>
+    </div>
+</FieldWrapper>
 `;
     class FormField extends owl_3.Component {
     }
