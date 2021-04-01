@@ -91,6 +91,7 @@ declare module "jowebutils.forms.Fields" {
         constructor();
         onChange(ev: Event): void;
         setValue(value: any): void;
+        setValueMultiple(input: any): void;
         validate(): string[];
         getFieldMeta(): IFieldMeta;
         get rawValue(): any;

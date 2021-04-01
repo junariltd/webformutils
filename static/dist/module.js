@@ -130,10 +130,18 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         }
         onChange(ev) {
             const input = ev.target;
+            if (input.getAttribute('aria-label') === 'multiple') {
+                return this.setValueMultiple(input);
+            }
             this.setValue(input.value);
         }
         setValue(value) {
             this.form.setValues({ [this.props.field.name]: value });
+        }
+        setValueMultiple(input) {
+            let values = Array.from(input.selectedOptions).map((v) => v.value);
+            this.form.setValues({ [this.props.field.name]: values });
+            console.log(this.form.values);
         }
         validate() {
             const errors = [];
@@ -156,14 +164,14 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             return this.form.values[this.props.field.name];
         }
         get formattedValue() {
-            return this.formatValue(this.rawValue);
+            let fVal = this.formatValue(this.rawValue);
+            return fVal;
         }
         formatValue(value) {
             if (this.props.field.type != 'boolean' && !value) {
                 return '';
             }
             else if ((this.props.field.type == 'many2many') && value) {
-                console.log('value', value);
                 return value;
             }
             else if ((this.props.field.type == 'selection' || this.props.field.type == 'many2many')
@@ -311,15 +319,13 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         t-att-required="props.field.required"
         t-att-value="formattedValue"
         t-on-change="onChange"
-        t-att-placeholder="props.field.placeholder"
-        aria-label="multiple select"
+        aria-label="multiple"
     >
-        <option value=""></option>
+        <option value="" t-att-selected="formattedValue.length == 0 ? 'selected' : false">No Roles</option>
         <t t-foreach="props.field.selection" t-as="sel_option">
             <option
                 t-att-value="sel_option[0]"
-                t-att-selected="sel_option[0] == rawValue ? 'selected' :
-                    rawValue != null &amp;&amp; rawValue.length == 2 &amp;&amp; sel_option[0] == rawValue[0] ? 'selected' : false"
+                t-att-selected="formattedValue.includes(sel_option[0]) ? 'selected' : false"
             ><t t-esc="sel_option[1]"/></option>
         </t>
     </select>
