@@ -27,6 +27,12 @@ declare module "jowebutils.owl_app" {
     }
     export function createOWLApp(appDef: OWLAppDefinition): any;
 }
+/// <amd-module name="jowebutils.querystring" />
+declare module "jowebutils.querystring" {
+    export function objectToQueryString(params: any): string;
+    export function getQueryStringValue(param: string): string | null;
+    export function getURLQueryStringValue(url: string, param: string): string | null;
+}
 /// <amd-module name="jowebutils.forms.Form" />
 declare module "jowebutils.forms.Form" {
     import { Component } from '@odoo/owl';

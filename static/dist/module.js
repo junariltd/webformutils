@@ -58,6 +58,26 @@ define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rp
     }
     exports.createOWLApp = createOWLApp;
 });
+///<amd-module name='jowebutils.querystring'/>
+define("jowebutils.querystring", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getURLQueryStringValue = exports.getQueryStringValue = exports.objectToQueryString = void 0;
+    function objectToQueryString(params) {
+        if (!params)
+            return '';
+        return Object.keys(params).map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(params[key])).join('&');
+    }
+    exports.objectToQueryString = objectToQueryString;
+    function getQueryStringValue(param) {
+        return getURLQueryStringValue(window.location.href, param);
+    }
+    exports.getQueryStringValue = getQueryStringValue;
+    function getURLQueryStringValue(url, param) {
+        return (new URL(url)).searchParams.get(param);
+    }
+    exports.getURLQueryStringValue = getURLQueryStringValue;
+});
 ///<amd-module name='jowebutils.forms.Form'/>
 define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (require, exports, owl_2) {
     "use strict";
