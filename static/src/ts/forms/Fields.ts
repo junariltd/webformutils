@@ -63,7 +63,6 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
     setValueMultiple(input: any) {
         let values = Array.from(input.selectedOptions).map((v: any) => v.value);
         this.form.setValues({ [this.props.field.name]: values})
-        console.log(this.form.values);
     }
 
     validate() {

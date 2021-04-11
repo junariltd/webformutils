@@ -144,3 +144,20 @@ declare module "jowebutils.widgets.NavBar" {
         onClickBreadcrumb(ev: any): void;
     }
 }
+/// <amd-module name="jowebutils.widgets.Table" />
+declare module "jowebutils.widgets.Table" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    export interface ITableColumn {
+        name: string;
+        string: string;
+    }
+    export interface ITableProps {
+        cols: ITableColumn[];
+        data: any[][];
+    }
+    export class Table extends Component<ITableProps, IOWLEnv> {
+        formatValue(value: any): any;
+        onClickRow(ev: any): void;
+    }
+}

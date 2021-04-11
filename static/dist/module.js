@@ -141,7 +141,6 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         setValueMultiple(input) {
             let values = Array.from(input.selectedOptions).map((v) => v.value);
             this.form.setValues({ [this.props.field.name]: values });
-            console.log(this.form.values);
         }
         validate() {
             const errors = [];
@@ -433,5 +432,44 @@ define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], functio
             </t>
         </ol>
     </nav>
+`;
+});
+///<amd-module name='jowebutils.widgets.Table'/>
+define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function (require, exports, owl_6) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Table = void 0;
+    class Table extends owl_6.Component {
+        formatValue(value) {
+            if (value instanceof Array && value.length == 2 && !isNaN(value[0])) {
+                return value[1]; // many2one value (id, name). Return name.
+            }
+            return value;
+        }
+        onClickRow(ev) {
+            ev.preventDefault();
+            const rowIndex = ev.target.dataset.index; // from data-index attribute
+            // this.env.router.navigate(breadcrumb.destination);
+        }
+    }
+    exports.Table = Table;
+    Table.template = owl_6.tags.xml /* xml */ `
+    <div class="table-responsive border rounded border-top-0">
+        <table class="table rounded mb-0 bg-white o_portal_my_doc_table jowebutils-table">
+            <tr>
+                <th t-foreach="props.cols" t-as="col" t-key="col.name"><t t-esc="col.string" /></th>
+            </tr>
+            <tr t-foreach="props.data" t-as="row">
+                <td t-foreach="props.cols" t-as="col" t-key="col.name">
+                    <t t-if="col_first">
+                        <a class="table-row-link" href="" t-att-data-id="row.id"><t t-esc="formatValue(row[col.name])" /></a>
+                    </t>
+                    <t t-else="">
+                        <t t-esc="formatValue(row[col.name])" />
+                    </t>
+                </td>
+            </tr>
+        </table>
+    </div>
 `;
 });
