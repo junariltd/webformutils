@@ -3,7 +3,7 @@
 
     <template id="assets_common" name="Shared Front-end and Back-end assets" inherit_id="web.assets_common">
         <xpath expr="." position="inside">
-            <script type="text/javascript" src="/jowebutils/static/lib/owl_1.2.3.js" />
+            <script type="text/javascript" src="/jowebutils/static/lib/owl.iife.1.2.4.js" />
             <script type="text/javascript" src="/jowebutils/static/src/js/define.js" />
         </xpath>
     </template>
