@@ -32,6 +32,7 @@ declare module "jowebutils.querystring" {
     export function objectToQueryString(params: any): string;
     export function getQueryStringValue(param: string): string | null;
     export function getURLQueryStringValue(url: string, param: string): string | null;
+    export function getAllQueryStringValues(): URLSearchParams;
 }
 /// <amd-module name="jowebutils.forms.Form" />
 declare module "jowebutils.forms.Form" {

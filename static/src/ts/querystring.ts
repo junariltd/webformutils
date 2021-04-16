@@ -16,5 +16,5 @@ export function getURLQueryStringValue(url: string, param: string) {
 }
 
 export function getAllQueryStringValues(){
-    return (new URL(window.location.href)).searchParams.entries();
+    return (new URL(window.location.href)).searchParams;
 }
