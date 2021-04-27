@@ -473,7 +473,9 @@ define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function
         onClickRow(ev) {
             ev.preventDefault();
             const rowIndex = ev.target.dataset.index; // from data-index attribute
-            // this.env.router.navigate(breadcrumb.destination);
+            this.trigger('row-clicked', {
+                row: this.props.data[rowIndex]
+            });
         }
     }
     exports.Table = Table;
@@ -486,7 +488,9 @@ define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function
             <tr t-foreach="props.data" t-as="row">
                 <td t-foreach="props.cols" t-as="col" t-key="col.name">
                     <t t-if="col_first">
-                        <a class="table-row-link" href="" t-att-data-id="row.id"><t t-esc="formatValue(row[col.name])" /></a>
+                        <a class="table-row-link" href=""
+                            t-on-click="onClickRow"
+                            t-att-data-index="row_index"><t t-esc="formatValue(row[col.name])" /></a>
                     </t>
                     <t t-else="">
                         <t t-esc="formatValue(row[col.name])" />
