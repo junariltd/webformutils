@@ -161,7 +161,7 @@ declare module "jowebutils.widgets.Table" {
     }
     export interface ITableProps {
         cols: ITableColumn[];
-        data: any[][];
+        data: any[];
     }
     export class Table extends Component<ITableProps, IOWLEnv> {
         formatValue(value: any): any;
