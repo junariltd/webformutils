@@ -11,7 +11,7 @@ export interface ITableColumn {
 
 export interface ITableProps {
     cols: ITableColumn[];
-    data: any[][];
+    data: any[];
 }
 
 export class Table extends Component<ITableProps, IOWLEnv> {

@@ -4,7 +4,11 @@
   "description": "Junari Web Utilities for Odoo",
   "main": "static/dist/module.js",
   "types": "static/dist/module.d.ts",
-  "scripts": {},
+  "scripts": {
+    "testapp:serve": "serve",
+    "testapp:livereload": "livereload",
+    "testapp": "concurrently \"npm:testapp:serve\" \"npm:testapp:livereload\""
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/junariltd/jowebutils.git"
@@ -17,6 +21,9 @@
   "homepage": "https://github.com/junariltd/jowebutils#readme",
   "devDependencies": {
     "@odoo/owl": "^1.2.4",
+    "concurrently": "^6.0.2",
+    "livereload": "^0.9.3",
+    "serve": "^11.3.2",
     "typescript": "^4.2.3"
   }
 }

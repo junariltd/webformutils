@@ -1,0 +1,14 @@
+{
+    "extends": "../tsconfig.json",
+    "include": [
+        "src",
+        "../static/src/ts"
+    ],
+    "compilerOptions": {
+        "outFile": "dist/module.js",
+        "baseUrl": "./",
+        "paths": {
+            "@jowebutils/*": ["../static/src/ts/*"]
+        }
+    }
+}
