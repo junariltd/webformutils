@@ -51,14 +51,17 @@ declare module "jowebutils.forms.Form" {
         detail: any;
     }
     export interface IFormProps {
+        name?: string;
         initialValues: IValues;
     }
     export class Form extends Component<IFormProps, IOWLEnv> {
+        name: string;
         formContext: IFormContext;
         fields: {
             [name: string]: IFieldComponent;
         };
         constructor();
+        willUnmount(): void;
         registerField(name: string, component: IFieldComponent): void;
         setValues(values: IValues): void;
         valuesChanged(fieldsChanged: string[]): void;
@@ -70,7 +73,7 @@ declare module "jowebutils.forms.Fields" {
     import { Component } from '@odoo/owl';
     import { IOWLEnv } from "jowebutils.owl_env";
     import { IFormContext } from "jowebutils.forms.Form";
-    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag' | 'many2many';
+    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'selection' | 'many2one' | 'html' | 'attachments' | 'tag' | 'many2many';
     export interface IFieldMeta {
         name: string;
         type: FieldType;
@@ -82,6 +85,7 @@ declare module "jowebutils.forms.Fields" {
         selection?: [string, string][];
     }
     export interface IFieldProps {
+        form?: string;
         field: IFieldMeta;
     }
     export type ValidationError = string;
@@ -93,6 +97,7 @@ declare module "jowebutils.forms.Fields" {
         value: any;
     }
     export class BaseField extends Component<IFieldProps, IOWLEnv> implements IFieldComponent {
+        formName: string;
         state: IFieldState;
         form: IFormContext;
         constructor();
@@ -107,11 +112,17 @@ declare module "jowebutils.forms.Fields" {
     }
     export class CharField extends BaseField {
     }
+    export class NumberField extends BaseField {
+    }
+    export class DateField extends BaseField {
+    }
+    export class DateTimeField extends BaseField {
+    }
+    export class TextField extends BaseField {
+    }
     export class BooleanField extends BaseField {
     }
     export class SelectField extends BaseField {
-    }
-    export class TagField extends BaseField {
     }
     export class FormField extends Component<IFieldProps, IOWLEnv> {
     }
@@ -166,5 +177,25 @@ declare module "jowebutils.widgets.Table" {
     export class Table extends Component<ITableProps, IOWLEnv> {
         formatValue(value: any): any;
         onClickRow(ev: any): void;
+    }
+}
+/// <amd-module name="jowebutils.widgets.Tabs" />
+declare module "jowebutils.widgets.Tabs" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    export interface ITabDef {
+        tab: string;
+        string: string;
+    }
+    export interface ITabsProps {
+        tabs: ITabDef[];
+    }
+    export interface ITabsState {
+        activeTab: string;
+    }
+    export class Tabs extends Component<ITabsProps, IOWLEnv> {
+        state: ITabsState;
+        constructor();
+        onClickTab(ev: any): void;
     }
 }

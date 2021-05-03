@@ -5,7 +5,9 @@ import { IOWLEnv } from '../owl_env';
 import { IFormContext } from './Form';
 
 export type FieldType = 'char' | 'text' | 'date' | 'datetime' |
-    'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag' | 'many2many';
+    'float' | 'integer' | 'boolean' |
+    'selection' | 'many2one' |  'html' | 'attachments' |
+    'tag' | 'many2many';
 
 export interface IFieldMeta {
     name: string;
@@ -220,13 +222,60 @@ FieldWrapper.template = tags.xml /* xml */ `
         </div>
     </div>
 `
-
 export class CharField extends BaseField {}
 CharField.components = { FieldWrapper }
 CharField.template = tags.xml /* xml */ `
     <FieldWrapper field="props.field">
         <input
             type="text"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`
+export class NumberField extends BaseField {}
+NumberField.components = { FieldWrapper }
+NumberField.template = tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="number"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`
+export class DateField extends BaseField {}
+DateField.components = { FieldWrapper }
+DateField.template = tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="date"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`
+export class DateTimeField extends BaseField {}
+DateTimeField.components = { FieldWrapper }
+DateTimeField.template = tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="datetime-local"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
@@ -299,7 +348,7 @@ SelectField.template = tags.xml /* xml */ `
 `
 
 export class FormField extends Component<IFieldProps, IOWLEnv>{}
-FormField.components = { CharField, TextField, BooleanField, SelectField }
+FormField.components = { CharField, TextField, NumberField, BooleanField, DateField, DateTimeField, SelectField }
 FormField.template = tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -308,8 +357,17 @@ FormField.template = tags.xml /* xml */ `
         <t t-if="props.field.type == 'text'">
             <TextField t-props="props" />
         </t>
+        <t t-if="props.field.type == 'float' || props.field.type == 'integer'">
+            <NumberField t-props="props" />
+        </t>
         <t t-if="props.field.type == 'boolean'">
             <BooleanField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'date'">
+            <DateField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'datetime'">
+            <DateTimeField t-props="props" />
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />

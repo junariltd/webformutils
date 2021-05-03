@@ -38,9 +38,13 @@ export class FormTester extends Component<{}, IOWLEnv> {
             form_fields: [
                 { name: 'char_field', type: 'char', string: 'Char Field' },
                 { name: 'text_field', type: 'text', string: 'Text Field' },
+                { name: 'float_field', type: 'float', string: 'Float Field' },
+                { name: 'integer_field', type: 'integer', string: 'Integer Field' },
                 { name: 'boolean_field', type: 'boolean', string: 'Boolean Field' },
                 { name: 'selection_field', type: 'selection', string: 'Selection Field',
                     selection: [['opt1','Option 1'],['opt2','Option 2'],['opt3','Option 3']] },
+                { name: 'date_field', type: 'date', string: 'Date Field' },
+                { name: 'datetime_field', type: 'datetime', string: 'Date & Time Field' },
             ],
             settings: {
             }

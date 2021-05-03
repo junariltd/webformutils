@@ -7,7 +7,7 @@ define("jowebutils.owl_env", ["require", "exports"], function (require, exports)
 define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function (require, exports, owl_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FormField = exports.TagField = exports.SelectField = exports.BooleanField = exports.TextField = exports.CharField = exports.BaseField = void 0;
+    exports.FormField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
     class BaseField extends owl_1.Component {
         constructor() {
             super(...arguments);
@@ -114,7 +114,6 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     CharField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper field="props.field">
         <input
-            t-if="!props.field.readonly"
             type="text"
             class="form-control"
             t-att-name="props.field.name"
@@ -122,12 +121,62 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-value="formattedValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
         />
-        <div
-            t-if="props.field.readonly"
-            class="form-control disabled">
-            <t t-esc="formattedValue" />
-        </div>
+    </FieldWrapper>
+`;
+    class NumberField extends BaseField {
+    }
+    exports.NumberField = NumberField;
+    NumberField.components = { FieldWrapper };
+    NumberField.template = owl_1.tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="number"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`;
+    class DateField extends BaseField {
+    }
+    exports.DateField = DateField;
+    DateField.components = { FieldWrapper };
+    DateField.template = owl_1.tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="date"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`;
+    class DateTimeField extends BaseField {
+    }
+    exports.DateTimeField = DateTimeField;
+    DateTimeField.components = { FieldWrapper };
+    DateTimeField.template = owl_1.tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="datetime-local"
+            class="form-control"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
     </FieldWrapper>
 `;
     class TextField extends BaseField {
@@ -176,16 +225,16 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     SelectField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper field="props.field">
         <select
-            t-if="!props.field.readonly"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
             t-att-value="formattedValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
         >
             <option value=""></option>
-            <t t-foreach="props.field.selection" t-as="sel_option">
+            <t t-foreach="props.field.selection || []" t-as="sel_option">
                 <option
                     t-att-value="sel_option[0]"
                     t-att-selected="sel_option[0] == rawValue ? 'selected' :
@@ -193,47 +242,12 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
-        <div
-            t-if="props.field.readonly"
-            class="form-control disabled">
-            <t t-esc="formattedValue" />
-        </div>
     </FieldWrapper>
-`;
-    class TagField extends BaseField {
-    }
-    exports.TagField = TagField;
-    TagField.components = { FieldWrapper };
-    TagField.template = owl_1.tags.xml /* xml */ `
-<FieldWrapper field="props.field">
-    <select multiple="multiple"
-        t-if="!props.field.readonly"
-        class="form-control"
-        t-att-name="props.field.name"
-        t-att-required="props.field.required"
-        t-att-value="formattedValue"
-        t-on-change="onChange"
-        aria-label="multiple"
-    >
-        <option value="" t-att-selected="formattedValue.length == 0 ? 'selected' : false">No Roles</option>
-        <t t-foreach="props.field.selection" t-as="sel_option">
-            <option
-                t-att-value="sel_option[0]"
-                t-att-selected="formattedValue.includes(sel_option[0]) ? 'selected' : false"
-            ><t t-esc="sel_option[1]"/></option>
-        </t>
-    </select>
-    <div
-        t-if="props.field.readonly"
-        class="form-control disabled">
-        <t t-esc="formattedValue" />
-    </div>
-</FieldWrapper>
 `;
     class FormField extends owl_1.Component {
     }
     exports.FormField = FormField;
-    FormField.components = { CharField, TextField, BooleanField, SelectField, TagField };
+    FormField.components = { CharField, TextField, NumberField, BooleanField, DateField, DateTimeField, SelectField };
     FormField.template = owl_1.tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -242,14 +256,20 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         <t t-if="props.field.type == 'text'">
             <TextField t-props="props" />
         </t>
+        <t t-if="props.field.type == 'float' || props.field.type == 'integer'">
+            <NumberField t-props="props" />
+        </t>
         <t t-if="props.field.type == 'boolean'">
             <BooleanField t-props="props" />
         </t>
+        <t t-if="props.field.type == 'date'">
+            <DateField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'datetime'">
+            <DateTimeField t-props="props" />
+        </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />
-        </t>
-        <t t-if="props.field.type == 'many2many'">
-            <TagField t-props="props" />
         </t>
     </div>
 `;
@@ -389,7 +409,13 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                 form_fields: [
                     { name: 'char_field', type: 'char', string: 'Char Field' },
                     { name: 'text_field', type: 'text', string: 'Text Field' },
+                    { name: 'float_field', type: 'float', string: 'Float Field' },
+                    { name: 'integer_field', type: 'integer', string: 'Integer Field' },
                     { name: 'boolean_field', type: 'boolean', string: 'Boolean Field' },
+                    { name: 'selection_field', type: 'selection', string: 'Selection Field',
+                        selection: [['opt1', 'Option 1'], ['opt2', 'Option 2'], ['opt3', 'Option 3']] },
+                    { name: 'date_field', type: 'date', string: 'Date Field' },
+                    { name: 'datetime_field', type: 'datetime', string: 'Date & Time Field' },
                 ],
                 settings: {}
             });

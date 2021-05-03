@@ -22,7 +22,7 @@ declare module "jowebutils.forms.Fields" {
     import { Component } from '@odoo/owl';
     import { IOWLEnv } from "jowebutils.owl_env";
     import { IFormContext } from "jowebutils.forms.Form";
-    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag' | 'many2many';
+    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'selection' | 'many2one' | 'html' | 'attachments' | 'tag' | 'many2many';
     export interface IFieldMeta {
         name: string;
         type: FieldType;
@@ -61,13 +61,17 @@ declare module "jowebutils.forms.Fields" {
     }
     export class CharField extends BaseField {
     }
+    export class NumberField extends BaseField {
+    }
+    export class DateField extends BaseField {
+    }
+    export class DateTimeField extends BaseField {
+    }
     export class TextField extends BaseField {
     }
     export class BooleanField extends BaseField {
     }
     export class SelectField extends BaseField {
-    }
-    export class TagField extends BaseField {
     }
     export class FormField extends Component<IFieldProps, IOWLEnv> {
     }
