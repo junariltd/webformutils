@@ -19,6 +19,7 @@ export interface IFieldMeta {
 }
 
 export interface IFieldProps {
+    form?: string;
     field: IFieldMeta;
 }
 
@@ -34,6 +35,7 @@ export interface IFieldState {
 }
 
 export class BaseField extends Component<IFieldProps, IOWLEnv> implements IFieldComponent {
+    formName: string;
     state: IFieldState;
     form: IFormContext;
 
@@ -42,18 +44,22 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
         this.state = hooks.useState({
             value: null
         });
-        this.form = hooks.useContext(this.env.formContext);
+        this.formName = this.props.form || 'form';
+        this.form = hooks.useContext(this.env.formContext[this.formName]);
         this.form.registerField(this.props.field.name, this);
     }
 
     onChange(ev: Event) {
         const input = ev.target as HTMLInputElement;
-        
-        if (input.getAttribute('aria-label') === 'multiple'){
-            return this.setValueMultiple(input);
+        if (input.getAttribute('type') == 'checkbox') {
+            this.setValue(input.checked == true);
         }
-
-        this.setValue(input.value);
+        else if (input.getAttribute('aria-label') === 'multiple'){
+            this.setValueMultiple(input);
+        }
+        else {
+            this.setValue(input.value);
+        }
     }
 
     setValue(value: any) {
@@ -244,7 +250,7 @@ BooleanField.template = tags.xml /* xml */ `
                 t-att-required="props.field.required"
                 t-att-value="true"
                 t-att-checked="rawValue"
-                t-on-change="onChange"
+                t-on-click="onChange"
             />
         </label>
         <div

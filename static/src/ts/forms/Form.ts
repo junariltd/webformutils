@@ -17,10 +17,12 @@ export interface OwlEvent extends Event {
 }
 
 export interface IFormProps {
+    name?: string;
     initialValues: IValues;
 }
 
 export class Form extends Component<IFormProps, IOWLEnv> {
+    name: string;
     formContext: IFormContext;
     fields: { [name: string]: IFieldComponent };
 
@@ -31,15 +33,28 @@ export class Form extends Component<IFormProps, IOWLEnv> {
         const registerField = this.registerField.bind(this);
 
         const formContextData = {
-            values: this.props.initialValues,
+            values: this.props.initialValues || {},
             registerField,
             setValues
         };
 
+        this.name = this.props.name || 'form';
+        if (!this.env.formContext) {
+            this.env.formContext = {};
+        }
+        else if (this.env.formContext[this.name]) {
+            throw new Error('Duplicate form declared. Use the "name" property to uniquely identify forms.')
+        }
+
         const formContextContainer = new Context(formContextData);
-        this.env.formContext = formContextContainer;
+        this.env.formContext[this.name] = formContextContainer;
         this.formContext = formContextContainer.state;
         this.fields = {};
+    }
+
+    willUnmount() {
+        // Remove form context
+        delete this.env.formContext[this.name]
     }
 
     registerField(name: string, component: IFieldComponent) {
