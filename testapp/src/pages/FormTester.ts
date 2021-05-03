@@ -9,6 +9,7 @@ import { Tabs } from '@jowebutils/widgets/Tabs';
 
 export interface IFormTesterState {
     initial_settings: { [setting: string]: any };
+    labelPosition: string;
     settings_fields: { [type: string]: IFieldMeta[] };
     form_fields: IFieldMeta[];
     output: null | string;
@@ -19,13 +20,15 @@ export class FormTester extends Component<{}, IOWLEnv> {
 
     constructor() {
         super(...arguments);
-        this.state = hooks.useState({
+        this.state = hooks.useState<IFormTesterState>({
             initial_settings: {
                 required: false,
                 readonly: false,
                 invisible: false,
+                labelPosition: 'left',
                 mode: 'edit',
             },
+            labelPosition: 'left',
             settings_fields: {
                 attribs: [
                     { name: 'required', type: 'boolean', string: 'Required' },
@@ -33,7 +36,9 @@ export class FormTester extends Component<{}, IOWLEnv> {
                     { name: 'invisible', type: 'boolean', string: 'Invisible' },
                     { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
                 ],
-                mode: [
+                layout: [
+                    { name: 'labelPosition', type: 'selection', string: 'Field Label Position',
+                        selection: [['left', 'Left'],['above', 'Above']]},
                     { name: 'mode', type: 'selection', string: 'Form Mode',
                         selection: [['view', 'View Mode'],['edit', 'Edit Mode']]},
                 ]
@@ -57,6 +62,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
     onSettingsChanged(ev: OwlEvent) {
         const newSettings = ev.detail.values;
         console.log('settings', newSettings);
+        this.state.labelPosition = newSettings.labelPosition;
         this.state.form_fields.forEach((field) => {
             field.required = newSettings.required;
             field.readonly = newSettings.readonly;
@@ -87,15 +93,15 @@ FormTester.template = tags.xml /* xml */ `
 
                             <Tabs tabs="[
                                 { tab: 'attribs', string: 'Field Attribs' },
-                                { tab: 'mode', string: 'Form Mode' }
+                                { tab: 'layout', string: 'Layout &amp; Mode' }
                             ]">
                                 <t t-set-slot="attribs">
                                     <t t-foreach="state.settings_fields.attribs" t-as="field" t-key="field.name">
                                         <FormField form="'settings'" field="field" />
                                     </t>
                                 </t>
-                                <t t-set-slot="mode">
-                                    <t t-foreach="state.settings_fields.mode" t-as="field" t-key="field.name">
+                                <t t-set-slot="layout">
+                                    <t t-foreach="state.settings_fields.layout" t-as="field" t-key="field.name">
                                         <FormField form="'settings'" field="field" />
                                     </t>
                                 </t>
@@ -112,7 +118,7 @@ FormTester.template = tags.xml /* xml */ `
                     <Form t-on-submitted="onSubmitted">
                         <div class="card-body p-4">
                             <t t-foreach="state.form_fields" t-as="field" t-key="field.name">
-                                <FormField field="field" />
+                                <FormField field="field" labelPosition="state.labelPosition" />
                             </t>
                             <button class="btn btn-primary" type="submit">Submit</button>
                         </div>

@@ -73,7 +73,7 @@ declare module "jowebutils.forms.Fields" {
     import { Component } from '@odoo/owl';
     import { IOWLEnv } from "jowebutils.owl_env";
     import { IFormContext } from "jowebutils.forms.Form";
-    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'selection' | 'many2one' | 'html' | 'attachments' | 'tag' | 'many2many';
+    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'binary' | 'selection' | 'many2one' | 'many2many';
     export interface IFieldMeta {
         name: string;
         type: FieldType;
@@ -123,6 +123,8 @@ declare module "jowebutils.forms.Fields" {
     export class BooleanField extends BaseField {
     }
     export class SelectField extends BaseField {
+    }
+    export class BinaryField extends BaseField {
     }
     export class FormField extends Component<IFieldProps, IOWLEnv> {
     }

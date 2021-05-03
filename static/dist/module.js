@@ -153,7 +153,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
 define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function (require, exports, owl_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FormField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
+    exports.FormField = exports.BinaryField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
     class BaseField extends owl_3.Component {
         constructor() {
             super(...arguments);
@@ -235,20 +235,29 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     }
     exports.BaseField = BaseField;
     class FieldWrapper extends owl_3.Component {
+        constructor() {
+            super(...arguments);
+            this.groupClassLeft = 'form-group joweb-field row';
+            this.groupClassAbove = 'form-group joweb-field';
+            this.labelClassLeft = 'col-sm-3 col-form-label';
+            this.labelClassAbove = '';
+            this.inputClassLeft = 'col-sm-9';
+            this.inputClassAbove = '';
+        }
     }
     FieldWrapper.template = owl_3.tags.xml /* xml */ `
-    <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
+    <div t-att-class="(props.labelPosition == 'above' ? groupClassAbove : groupClassLeft)
             + (props.field.invisible ? ' d-none' : '')
             + (props.field.required ? ' joweb-field-required' : '')">
         <label t-if="!props.field.invisible"
             t-att-for="props.field.name"
-            class="col-sm-3 col-form-label"
+            t-att-class="(props.labelPosition == 'above' ? labelClassAbove : labelClassLeft)"
             t-att-data-toggle="props.field.tooltip ? 'tooltip' : ''"
             t-att-data-placement="props.field.tooltip ? 'top' : ''"
             t-att-title="props.field.tooltip">
             <t t-esc="props.field.string"/>
         </label>
-        <div class="col-sm-9">
+        <div t-att-class="(props.labelPosition == 'above' ? inputClassAbove : inputClassLeft)">
             <t t-slot="default"/>
         </div>
     </div>
@@ -258,7 +267,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.CharField = CharField;
     CharField.components = { FieldWrapper };
     CharField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="text"
             class="form-control"
@@ -276,7 +285,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.NumberField = NumberField;
     NumberField.components = { FieldWrapper };
     NumberField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="number"
             class="form-control"
@@ -294,13 +303,13 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.DateField = DateField;
     DateField.components = { FieldWrapper };
     DateField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="date"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
+            t-att-value="rawValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
@@ -312,13 +321,13 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.DateTimeField = DateTimeField;
     DateTimeField.components = { FieldWrapper };
     DateTimeField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="datetime-local"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
+            t-att-value="rawValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
@@ -330,7 +339,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.TextField = TextField;
     TextField.components = { FieldWrapper };
     TextField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <div class="grow-wrap">
             <textarea
                 class="form-control"
@@ -350,7 +359,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.BooleanField = BooleanField;
     BooleanField.components = { FieldWrapper };
     BooleanField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <label class="joweb-check">
             <input
                 type="checkbox"
@@ -369,7 +378,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.SelectField = SelectField;
     SelectField.components = { FieldWrapper };
     SelectField.template = owl_3.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <select
             class="form-control"
             t-att-name="props.field.name"
@@ -390,10 +399,29 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </select>
     </FieldWrapper>
 `;
+    class BinaryField extends BaseField {
+    }
+    exports.BinaryField = BinaryField;
+    BinaryField.components = { FieldWrapper };
+    BinaryField.template = owl_3.tags.xml /* xml */ `
+    <FieldWrapper t-props="props">
+        <input
+            type="file"
+            class="form-control-file"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`;
     class FormField extends owl_3.Component {
     }
     exports.FormField = FormField;
-    FormField.components = { CharField, TextField, NumberField, BooleanField, DateField, DateTimeField, SelectField };
+    FormField.components = { CharField, TextField, NumberField, BooleanField,
+        DateField, DateTimeField, SelectField, BinaryField };
     FormField.template = owl_3.tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -416,6 +444,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'binary'">
+            <BinaryField t-props="props" />
         </t>
     </div>
 `;

@@ -89,20 +89,29 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     }
     exports.BaseField = BaseField;
     class FieldWrapper extends owl_1.Component {
+        constructor() {
+            super(...arguments);
+            this.groupClassLeft = 'form-group joweb-field row';
+            this.groupClassAbove = 'form-group joweb-field';
+            this.labelClassLeft = 'col-sm-3 col-form-label';
+            this.labelClassAbove = '';
+            this.inputClassLeft = 'col-sm-9';
+            this.inputClassAbove = '';
+        }
     }
     FieldWrapper.template = owl_1.tags.xml /* xml */ `
-    <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
+    <div t-att-class="(props.labelPosition == 'above' ? groupClassAbove : groupClassLeft)
             + (props.field.invisible ? ' d-none' : '')
             + (props.field.required ? ' joweb-field-required' : '')">
         <label t-if="!props.field.invisible"
             t-att-for="props.field.name"
-            class="col-sm-3 col-form-label"
+            t-att-class="(props.labelPosition == 'above' ? labelClassAbove : labelClassLeft)"
             t-att-data-toggle="props.field.tooltip ? 'tooltip' : ''"
             t-att-data-placement="props.field.tooltip ? 'top' : ''"
             t-att-title="props.field.tooltip">
             <t t-esc="props.field.string"/>
         </label>
-        <div class="col-sm-9">
+        <div t-att-class="(props.labelPosition == 'above' ? inputClassAbove : inputClassLeft)">
             <t t-slot="default"/>
         </div>
     </div>
@@ -112,7 +121,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.CharField = CharField;
     CharField.components = { FieldWrapper };
     CharField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="text"
             class="form-control"
@@ -130,7 +139,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.NumberField = NumberField;
     NumberField.components = { FieldWrapper };
     NumberField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="number"
             class="form-control"
@@ -148,7 +157,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.DateField = DateField;
     DateField.components = { FieldWrapper };
     DateField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="date"
             class="form-control"
@@ -166,7 +175,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.DateTimeField = DateTimeField;
     DateTimeField.components = { FieldWrapper };
     DateTimeField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="datetime-local"
             class="form-control"
@@ -184,7 +193,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.TextField = TextField;
     TextField.components = { FieldWrapper };
     TextField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <div class="grow-wrap">
             <textarea
                 class="form-control"
@@ -204,7 +213,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.BooleanField = BooleanField;
     BooleanField.components = { FieldWrapper };
     BooleanField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <label class="joweb-check">
             <input
                 type="checkbox"
@@ -223,7 +232,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.SelectField = SelectField;
     SelectField.components = { FieldWrapper };
     SelectField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <select
             class="form-control"
             t-att-name="props.field.name"
@@ -249,7 +258,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     exports.BinaryField = BinaryField;
     BinaryField.components = { FieldWrapper };
     BinaryField.template = owl_1.tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="file"
             class="form-control-file"
@@ -416,8 +425,10 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                     required: false,
                     readonly: false,
                     invisible: false,
+                    labelPosition: 'left',
                     mode: 'edit',
                 },
+                labelPosition: 'left',
                 settings_fields: {
                     attribs: [
                         { name: 'required', type: 'boolean', string: 'Required' },
@@ -425,7 +436,9 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                         { name: 'invisible', type: 'boolean', string: 'Invisible' },
                         { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
                     ],
-                    mode: [
+                    layout: [
+                        { name: 'labelPosition', type: 'selection', string: 'Field Label Position',
+                            selection: [['left', 'Left'], ['above', 'Above']] },
                         { name: 'mode', type: 'selection', string: 'Form Mode',
                             selection: [['view', 'View Mode'], ['edit', 'Edit Mode']] },
                     ]
@@ -448,6 +461,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
         onSettingsChanged(ev) {
             const newSettings = ev.detail.values;
             console.log('settings', newSettings);
+            this.state.labelPosition = newSettings.labelPosition;
             this.state.form_fields.forEach((field) => {
                 field.required = newSettings.required;
                 field.readonly = newSettings.readonly;
@@ -478,15 +492,15 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
 
                             <Tabs tabs="[
                                 { tab: 'attribs', string: 'Field Attribs' },
-                                { tab: 'mode', string: 'Form Mode' }
+                                { tab: 'layout', string: 'Layout &amp; Mode' }
                             ]">
                                 <t t-set-slot="attribs">
                                     <t t-foreach="state.settings_fields.attribs" t-as="field" t-key="field.name">
                                         <FormField form="'settings'" field="field" />
                                     </t>
                                 </t>
-                                <t t-set-slot="mode">
-                                    <t t-foreach="state.settings_fields.mode" t-as="field" t-key="field.name">
+                                <t t-set-slot="layout">
+                                    <t t-foreach="state.settings_fields.layout" t-as="field" t-key="field.name">
                                         <FormField form="'settings'" field="field" />
                                     </t>
                                 </t>
@@ -503,7 +517,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                     <Form t-on-submitted="onSubmitted">
                         <div class="card-body p-4">
                             <t t-foreach="state.form_fields" t-as="field" t-key="field.name">
-                                <FormField field="field" />
+                                <FormField field="field" labelPosition="state.labelPosition" />
                             </t>
                             <button class="btn btn-primary" type="submit">Submit</button>
                         </div>

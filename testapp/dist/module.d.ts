@@ -142,6 +142,7 @@ declare module "jowebutils.testapp.FormTester" {
         initial_settings: {
             [setting: string]: any;
         };
+        labelPosition: string;
         settings_fields: {
             [type: string]: IFieldMeta[];
         };

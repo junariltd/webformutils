@@ -203,20 +203,27 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
     // }
 }
 
-class FieldWrapper extends Component<IFieldProps> {}
+class FieldWrapper extends Component {
+    groupClassLeft = 'form-group joweb-field row';
+    groupClassAbove = 'form-group joweb-field';
+    labelClassLeft = 'col-sm-3 col-form-label'
+    labelClassAbove = ''
+    inputClassLeft = 'col-sm-9'
+    inputClassAbove = ''
+}
 FieldWrapper.template = tags.xml /* xml */ `
-    <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
+    <div t-att-class="(props.labelPosition == 'above' ? groupClassAbove : groupClassLeft)
             + (props.field.invisible ? ' d-none' : '')
             + (props.field.required ? ' joweb-field-required' : '')">
         <label t-if="!props.field.invisible"
             t-att-for="props.field.name"
-            class="col-sm-3 col-form-label"
+            t-att-class="(props.labelPosition == 'above' ? labelClassAbove : labelClassLeft)"
             t-att-data-toggle="props.field.tooltip ? 'tooltip' : ''"
             t-att-data-placement="props.field.tooltip ? 'top' : ''"
             t-att-title="props.field.tooltip">
             <t t-esc="props.field.string"/>
         </label>
-        <div class="col-sm-9">
+        <div t-att-class="(props.labelPosition == 'above' ? inputClassAbove : inputClassLeft)">
             <t t-slot="default"/>
         </div>
     </div>
@@ -224,7 +231,7 @@ FieldWrapper.template = tags.xml /* xml */ `
 export class CharField extends BaseField {}
 CharField.components = { FieldWrapper }
 CharField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="text"
             class="form-control"
@@ -240,7 +247,7 @@ CharField.template = tags.xml /* xml */ `
 export class NumberField extends BaseField {}
 NumberField.components = { FieldWrapper }
 NumberField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="number"
             class="form-control"
@@ -256,7 +263,7 @@ NumberField.template = tags.xml /* xml */ `
 export class DateField extends BaseField {}
 DateField.components = { FieldWrapper }
 DateField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="date"
             class="form-control"
@@ -272,7 +279,7 @@ DateField.template = tags.xml /* xml */ `
 export class DateTimeField extends BaseField {}
 DateTimeField.components = { FieldWrapper }
 DateTimeField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="datetime-local"
             class="form-control"
@@ -288,7 +295,7 @@ DateTimeField.template = tags.xml /* xml */ `
 export class TextField extends BaseField {}
 TextField.components = { FieldWrapper }
 TextField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <div class="grow-wrap">
             <textarea
                 class="form-control"
@@ -306,7 +313,7 @@ TextField.template = tags.xml /* xml */ `
 export class BooleanField extends BaseField {}
 BooleanField.components = { FieldWrapper }
 BooleanField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <label class="joweb-check">
             <input
                 type="checkbox"
@@ -323,7 +330,7 @@ BooleanField.template = tags.xml /* xml */ `
 export class SelectField extends BaseField {}
 SelectField.components = { FieldWrapper }
 SelectField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <select
             class="form-control"
             t-att-name="props.field.name"
@@ -347,7 +354,7 @@ SelectField.template = tags.xml /* xml */ `
 export class BinaryField extends BaseField {}
 BinaryField.components = { FieldWrapper }
 BinaryField.template = tags.xml /* xml */ `
-    <FieldWrapper field="props.field">
+    <FieldWrapper t-props="props">
         <input
             type="file"
             class="form-control-file"
