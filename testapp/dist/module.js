@@ -34,7 +34,6 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             }
         }
         setValue(value) {
-            console.log('setvalue', value);
             this.form.setValues({ [this.props.field.name]: value });
         }
         setValueMultiple(input) {
@@ -443,7 +442,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                     { name: 'datetime_field', type: 'datetime', string: 'Date & Time Field' },
                     { name: 'file_field', type: 'binary', string: 'File Field' },
                 ],
-                settings: {}
+                output: null
             });
         }
         onSettingsChanged(ev) {
@@ -457,7 +456,8 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
             });
         }
         onSubmitted(ev) {
-            console.log('submitted');
+            const formValues = ev.detail.values;
+            this.state.output = JSON.stringify(formValues, null, 2);
         }
     }
     exports.FormTester = FormTester;
@@ -509,6 +509,17 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                         </div>
                     </Form>
                 </div>
+
+                <div class="card shadow-sm mt-3" t-if="state.output">
+                    <div class="card-header">
+                        <b>Form Output</b>
+                    </div>
+                    <div class="card-body p-4">
+                        <div t-esc="state.output" style="white-space: pre;" />
+                    </div>
+                </div>
+
+                <div style="height: 100px;"></div>
 
             </div>
         </div>

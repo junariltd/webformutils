@@ -146,6 +146,7 @@ declare module "jowebutils.testapp.FormTester" {
             [type: string]: IFieldMeta[];
         };
         form_fields: IFieldMeta[];
+        output: null | string;
     }
     export class FormTester extends Component<{}, IOWLEnv> {
         state: IFormTesterState;

@@ -11,6 +11,7 @@ export interface IFormTesterState {
     initial_settings: { [setting: string]: any };
     settings_fields: { [type: string]: IFieldMeta[] };
     form_fields: IFieldMeta[];
+    output: null | string;
 }
 
 export class FormTester extends Component<{}, IOWLEnv> {
@@ -49,8 +50,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
                 { name: 'datetime_field', type: 'datetime', string: 'Date & Time Field' },
                 { name: 'file_field', type: 'binary', string: 'File Field' },
             ],
-            settings: {
-            }
+            output: null
         });
     }
 
@@ -66,7 +66,8 @@ export class FormTester extends Component<{}, IOWLEnv> {
     }
 
     onSubmitted(ev: OwlEvent) {
-        console.log('submitted');
+        const formValues = ev.detail.values;
+        this.state.output = JSON.stringify(formValues, null, 2);
     }
 }
 FormTester.components = { Form, FormField, Tabs }
@@ -117,6 +118,17 @@ FormTester.template = tags.xml /* xml */ `
                         </div>
                     </Form>
                 </div>
+
+                <div class="card shadow-sm mt-3" t-if="state.output">
+                    <div class="card-header">
+                        <b>Form Output</b>
+                    </div>
+                    <div class="card-body p-4">
+                        <div t-esc="state.output" style="white-space: pre;" />
+                    </div>
+                </div>
+
+                <div style="height: 100px;"></div>
 
             </div>
         </div>
