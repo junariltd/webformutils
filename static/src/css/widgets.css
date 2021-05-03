@@ -16,3 +16,7 @@
     white-space: normal;
     vertical-align: top;
 }
+
+.o_portal_submenu.breadcrumb {
+    background: transparent;
+}
