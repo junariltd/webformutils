@@ -45,6 +45,9 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
             value: null
         });
         this.formName = this.props.form || 'form';
+        if (!this.env.formContext[this.formName]) {
+            throw new Error('Form name does not exist: ' + this.formName);
+        }
         this.form = hooks.useContext(this.env.formContext[this.formName]);
         this.form.registerField(this.props.field.name, this);
     }
@@ -325,16 +328,16 @@ FormField.components = { CharField, BooleanField, SelectField, TagField }
 FormField.template = tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
-            <CharField field="props.field"/>
+            <CharField t-props="props" />
         </t>
         <t t-if="props.field.type == 'boolean'">
-            <BooleanField field="props.field"/>
+            <BooleanField t-props="props" />
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
-            <SelectField field="props.field"/>
+            <SelectField t-props="props" />
         </t>
         <t t-if="props.field.type == 'many2many'">
-            <TagField field="props.field"/>
+            <TagField t-props="props" />
         </t>
     </div>
 `
