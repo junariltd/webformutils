@@ -20,15 +20,17 @@ export class FormTester extends Component<{}, IOWLEnv> {
         this.state = hooks.useState({
             initial_settings: {
                 required: false,
-                readonly: false,
+                readonly: false
             },
             settings_fields: [
                 { name: 'required', type: 'boolean', string: 'Required' },
-                { name: 'readonly', type: 'boolean', string: 'Readonly' }
+                { name: 'readonly', type: 'boolean', string: 'Readonly' },
+                { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
             ],
             form_fields: [
                 { name: 'char_field', type: 'char', string: 'Char Field' },
-                { name: 'boolean_field', type: 'boolean', string: 'Boolean Field' }
+                { name: 'text_field', type: 'text', string: 'Text Field' },
+                { name: 'boolean_field', type: 'boolean', string: 'Boolean Field' },
             ],
             settings: {
             }
@@ -41,6 +43,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
         this.state.form_fields.forEach((field) => {
             field.required = newSettings.required;
             field.readonly = newSettings.readonly;
+            field.placeholder = newSettings.placeholder;
         })
     }
 

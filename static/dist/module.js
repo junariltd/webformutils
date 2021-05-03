@@ -93,7 +93,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             const setValues = this.setValues.bind(this);
             const registerField = this.registerField.bind(this);
             const formContextData = {
-                values: this.props.initialValues,
+                values: this.props.initialValues || {},
                 registerField,
                 setValues
             };

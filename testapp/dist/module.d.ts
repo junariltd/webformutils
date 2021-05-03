@@ -17,11 +17,113 @@ declare module "jowebutils.owl_env" {
         [key: string]: any;
     }
 }
+/// <amd-module name="jowebutils.forms.Fields" />
+declare module "jowebutils.forms.Fields" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    import { IFormContext } from "jowebutils.forms.Form";
+    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag' | 'many2many';
+    export interface IFieldMeta {
+        name: string;
+        type: FieldType;
+        string: string;
+        placeholder?: string;
+        invisible?: boolean;
+        required?: boolean;
+        readonly?: boolean;
+        selection?: [string, string][];
+    }
+    export interface IFieldProps {
+        form?: string;
+        field: IFieldMeta;
+    }
+    export type ValidationError = string;
+    export interface IFieldComponent {
+        validate(): ValidationError[];
+        getFieldMeta(): IFieldMeta;
+    }
+    export interface IFieldState {
+        value: any;
+    }
+    export class BaseField extends Component<IFieldProps, IOWLEnv> implements IFieldComponent {
+        formName: string;
+        state: IFieldState;
+        form: IFormContext;
+        constructor();
+        onChange(ev: Event): void;
+        setValue(value: any): void;
+        setValueMultiple(input: any): void;
+        validate(): string[];
+        getFieldMeta(): IFieldMeta;
+        get rawValue(): any;
+        get formattedValue(): any;
+        formatValue(value: any): any;
+    }
+    export class CharField extends BaseField {
+    }
+    export class TextField extends BaseField {
+    }
+    export class BooleanField extends BaseField {
+    }
+    export class SelectField extends BaseField {
+    }
+    export class TagField extends BaseField {
+    }
+    export class FormField extends Component<IFieldProps, IOWLEnv> {
+    }
+}
+/// <amd-module name="jowebutils.forms.Form" />
+declare module "jowebutils.forms.Form" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    import { IFieldComponent } from "jowebutils.forms.Fields";
+    export interface IValues {
+        [fieldName: string]: any;
+    }
+    export interface IFormContext {
+        values: IValues;
+        setValues(values: IValues): void;
+        registerField(name: string, component: IFieldComponent): void;
+    }
+    export interface OwlEvent extends Event {
+        detail: any;
+    }
+    export interface IFormProps {
+        name?: string;
+        initialValues: IValues;
+    }
+    export class Form extends Component<IFormProps, IOWLEnv> {
+        name: string;
+        formContext: IFormContext;
+        fields: {
+            [name: string]: IFieldComponent;
+        };
+        constructor();
+        willUnmount(): void;
+        registerField(name: string, component: IFieldComponent): void;
+        setValues(values: IValues): void;
+        valuesChanged(fieldsChanged: string[]): void;
+        onSubmit(ev: Event): void;
+    }
+}
 /// <amd-module name="jowebutils.testapp.FormTester" />
 declare module "jowebutils.testapp.FormTester" {
     import { Component } from '@odoo/owl';
-    import { IOWLEnv } from '@jowebutils/owl_env';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    import { OwlEvent } from "jowebutils.forms.Form";
+    import { IFieldMeta } from "jowebutils.forms.Fields";
+    export interface IFormTesterState {
+        initial_settings: {
+            [setting: string]: any;
+        };
+        settings_fields: IFieldMeta[];
+        form_fields: IFieldMeta[];
+    }
     export class FormTester extends Component<{}, IOWLEnv> {
+        state: IFormTesterState;
+        constructor();
+        onSettingsChanged(ev: OwlEvent): void;
+        onSubmitted(ev: OwlEvent): void;
     }
 }
 /// <amd-module name="jowebutils.testapp.main" />
@@ -46,8 +148,8 @@ declare module "jowebutils.widgets.Table" {
 /// <amd-module name="jowebutils.testapp.WidgetsTester" />
 declare module "jowebutils.testapp.WidgetsTester" {
     import { Component } from '@odoo/owl';
-    import { IOWLEnv } from '@jowebutils/owl_env';
-    import { ITableColumn } from '@jowebutils/widgets/Table';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    import { ITableColumn } from "jowebutils.widgets.Table";
     export interface IWidgetsTesterState {
         cols: ITableColumn[];
         data: any[];
@@ -73,88 +175,6 @@ declare module "jowebutils.querystring" {
     export function getQueryStringValue(param: string): string | null;
     export function getURLQueryStringValue(url: string, param: string): string | null;
     export function getAllQueryStringValues(): URLSearchParams;
-}
-/// <amd-module name="jowebutils.forms.Form" />
-declare module "jowebutils.forms.Form" {
-    import { Component } from '@odoo/owl';
-    import { IOWLEnv } from "jowebutils.owl_env";
-    import { IFieldComponent } from "jowebutils.forms.Fields";
-    export interface IValues {
-        [fieldName: string]: any;
-    }
-    export interface IFormContext {
-        values: IValues;
-        setValues(values: IValues): void;
-        registerField(name: string, component: IFieldComponent): void;
-    }
-    export interface OwlEvent extends Event {
-        detail: any;
-    }
-    export interface IFormProps {
-        initialValues: IValues;
-    }
-    export class Form extends Component<IFormProps, IOWLEnv> {
-        formContext: IFormContext;
-        fields: {
-            [name: string]: IFieldComponent;
-        };
-        constructor();
-        registerField(name: string, component: IFieldComponent): void;
-        setValues(values: IValues): void;
-        valuesChanged(fieldsChanged: string[]): void;
-        onSubmit(ev: Event): void;
-    }
-}
-/// <amd-module name="jowebutils.forms.Fields" />
-declare module "jowebutils.forms.Fields" {
-    import { Component } from '@odoo/owl';
-    import { IOWLEnv } from "jowebutils.owl_env";
-    import { IFormContext } from "jowebutils.forms.Form";
-    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'selection' | 'many2one' | 'boolean' | 'html' | 'attachments' | 'tag' | 'many2many';
-    export interface IFieldMeta {
-        name: string;
-        type: FieldType;
-        string: string;
-        placeholder?: string;
-        invisible?: boolean;
-        required?: boolean;
-        readonly?: boolean;
-        selection?: [string, string][];
-    }
-    export interface IFieldProps {
-        field: IFieldMeta;
-    }
-    export type ValidationError = string;
-    export interface IFieldComponent {
-        validate(): ValidationError[];
-        getFieldMeta(): IFieldMeta;
-    }
-    export interface IFieldState {
-        value: any;
-    }
-    export class BaseField extends Component<IFieldProps, IOWLEnv> implements IFieldComponent {
-        state: IFieldState;
-        form: IFormContext;
-        constructor();
-        onChange(ev: Event): void;
-        setValue(value: any): void;
-        setValueMultiple(input: any): void;
-        validate(): string[];
-        getFieldMeta(): IFieldMeta;
-        get rawValue(): any;
-        get formattedValue(): any;
-        formatValue(value: any): any;
-    }
-    export class CharField extends BaseField {
-    }
-    export class BooleanField extends BaseField {
-    }
-    export class SelectField extends BaseField {
-    }
-    export class TagField extends BaseField {
-    }
-    export class FormField extends Component<IFieldProps, IOWLEnv> {
-    }
 }
 /// <amd-module name="jowebutils.forms.TagFieldInput" />
 declare module "jowebutils.forms.TagFieldInput" {
