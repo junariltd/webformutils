@@ -73,7 +73,8 @@ declare module "jowebutils.forms.Fields" {
     import { Component } from '@odoo/owl';
     import { IOWLEnv } from "jowebutils.owl_env";
     import { IFormContext } from "jowebutils.forms.Form";
-    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'binary' | 'selection' | 'many2one' | 'many2many';
+    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'binary' | 'selection' | 'multiselect' | 'many2one' | 'many2many';
+    export type SelectionOption = [string, string];
     export interface IFieldMeta {
         name: string;
         type: FieldType;
@@ -82,7 +83,7 @@ declare module "jowebutils.forms.Fields" {
         invisible?: boolean;
         required?: boolean;
         readonly?: boolean;
-        selection?: [string, string][];
+        selection?: SelectionOption[];
     }
     export interface IFieldProps {
         form?: string;
@@ -103,7 +104,9 @@ declare module "jowebutils.forms.Fields" {
         constructor();
         onChange(ev: Event): void;
         setValue(value: any): void;
-        setValueMultiple(input: any): void;
+        multiIsSelected(value: any): boolean;
+        multiSelectValue(value: any): void;
+        multiDeselectValue(value: any): void;
         validate(): string[];
         getFieldMeta(): IFieldMeta;
         get rawValue(): any;
@@ -123,6 +126,8 @@ declare module "jowebutils.forms.Fields" {
     export class BooleanField extends BaseField {
     }
     export class SelectField extends BaseField {
+    }
+    export class MultiSelectField extends BaseField {
     }
     export class BinaryField extends BaseField {
     }

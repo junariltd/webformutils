@@ -8,6 +8,8 @@ export type FieldType = 'char' | 'text' | 'date' | 'datetime' |
     'float' | 'integer' | 'boolean' | 'binary' |
     'selection' | 'multiselect' | 'many2one' | 'many2many' ;
 
+export type SelectionOption = [string, string];
+    
 export interface IFieldMeta {
     name: string;
     type: FieldType;
@@ -16,7 +18,7 @@ export interface IFieldMeta {
     invisible?: boolean;
     required?: boolean;
     readonly?: boolean;
-    selection?: [string, string][];
+    selection?: SelectionOption[];
 }
 
 export interface IFieldProps {
