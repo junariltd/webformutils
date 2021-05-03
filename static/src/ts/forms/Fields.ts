@@ -226,7 +226,6 @@ CharField.components = { FieldWrapper }
 CharField.template = tags.xml /* xml */ `
     <FieldWrapper field="props.field">
         <input
-            t-if="!props.field.readonly"
             type="text"
             class="form-control"
             t-att-name="props.field.name"
@@ -234,12 +233,8 @@ CharField.template = tags.xml /* xml */ `
             t-att-value="formattedValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
         />
-        <div
-            t-if="props.field.readonly"
-            class="form-control disabled">
-            <t t-esc="formattedValue" />
-        </div>
     </FieldWrapper>
 `
 export class TextField extends BaseField {}
@@ -283,16 +278,16 @@ SelectField.components = { FieldWrapper }
 SelectField.template = tags.xml /* xml */ `
     <FieldWrapper field="props.field">
         <select
-            t-if="!props.field.readonly"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
             t-att-value="formattedValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
         >
             <option value=""></option>
-            <t t-foreach="props.field.selection" t-as="sel_option">
+            <t t-foreach="props.field.selection || []" t-as="sel_option">
                 <option
                     t-att-value="sel_option[0]"
                     t-att-selected="sel_option[0] == rawValue ? 'selected' :
@@ -300,45 +295,11 @@ SelectField.template = tags.xml /* xml */ `
                 ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
-        <div
-            t-if="props.field.readonly"
-            class="form-control disabled">
-            <t t-esc="formattedValue" />
-        </div>
     </FieldWrapper>
 `
 
-export class TagField extends BaseField {}
-TagField.components = { FieldWrapper }
-TagField.template = tags.xml /* xml */ `
-<FieldWrapper field="props.field">
-    <select multiple="multiple"
-        t-if="!props.field.readonly"
-        class="form-control"
-        t-att-name="props.field.name"
-        t-att-required="props.field.required"
-        t-att-value="formattedValue"
-        t-on-change="onChange"
-        aria-label="multiple"
-    >
-        <option value="" t-att-selected="formattedValue.length == 0 ? 'selected' : false">No Roles</option>
-        <t t-foreach="props.field.selection" t-as="sel_option">
-            <option
-                t-att-value="sel_option[0]"
-                t-att-selected="formattedValue.includes(sel_option[0]) ? 'selected' : false"
-            ><t t-esc="sel_option[1]"/></option>
-        </t>
-    </select>
-    <div
-        t-if="props.field.readonly"
-        class="form-control disabled">
-        <t t-esc="formattedValue" />
-    </div>
-</FieldWrapper>
-`
-
 export class FormField extends Component<IFieldProps, IOWLEnv>{}
-FormField.components = { CharField, TextField, BooleanField, SelectField, TagField }
+FormField.components = { CharField, TextField, BooleanField, SelectField }
 FormField.template = tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -352,9 +313,6 @@ FormField.template = tags.xml /* xml */ `
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />
-        </t>
-        <t t-if="props.field.type == 'many2many'">
-            <TagField t-props="props" />
         </t>
     </div>
 `

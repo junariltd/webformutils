@@ -39,6 +39,8 @@ export class FormTester extends Component<{}, IOWLEnv> {
                 { name: 'char_field', type: 'char', string: 'Char Field' },
                 { name: 'text_field', type: 'text', string: 'Text Field' },
                 { name: 'boolean_field', type: 'boolean', string: 'Boolean Field' },
+                { name: 'selection_field', type: 'selection', string: 'Selection Field',
+                    selection: [['opt1','Option 1'],['opt2','Option 2'],['opt3','Option 3']] },
             ],
             settings: {
             }
