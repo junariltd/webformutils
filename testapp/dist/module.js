@@ -7,7 +7,7 @@ define("jowebutils.owl_env", ["require", "exports"], function (require, exports)
 define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function (require, exports, owl_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FormField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
+    exports.FormField = exports.BinaryField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
     class BaseField extends owl_1.Component {
         constructor() {
             super(...arguments);
@@ -34,6 +34,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             }
         }
         setValue(value) {
+            console.log('setvalue', value);
             this.form.setValues({ [this.props.field.name]: value });
         }
         setValueMultiple(input) {
@@ -154,7 +155,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
+            t-att-value="rawValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
@@ -172,7 +173,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
+            t-att-value="rawValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
@@ -244,10 +245,29 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </select>
     </FieldWrapper>
 `;
+    class BinaryField extends BaseField {
+    }
+    exports.BinaryField = BinaryField;
+    BinaryField.components = { FieldWrapper };
+    BinaryField.template = owl_1.tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="file"
+            class="form-control-file"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`;
     class FormField extends owl_1.Component {
     }
     exports.FormField = FormField;
-    FormField.components = { CharField, TextField, NumberField, BooleanField, DateField, DateTimeField, SelectField };
+    FormField.components = { CharField, TextField, NumberField, BooleanField,
+        DateField, DateTimeField, SelectField, BinaryField };
     FormField.template = owl_1.tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -270,6 +290,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'binary'">
+            <BinaryField t-props="props" />
         </t>
     </div>
 `;
@@ -393,12 +416,14 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                 initial_settings: {
                     required: false,
                     readonly: false,
+                    invisible: false,
                     mode: 'edit',
                 },
                 settings_fields: {
                     attribs: [
                         { name: 'required', type: 'boolean', string: 'Required' },
                         { name: 'readonly', type: 'boolean', string: 'Readonly' },
+                        { name: 'invisible', type: 'boolean', string: 'Invisible' },
                         { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
                     ],
                     mode: [
@@ -416,6 +441,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                         selection: [['opt1', 'Option 1'], ['opt2', 'Option 2'], ['opt3', 'Option 3']] },
                     { name: 'date_field', type: 'date', string: 'Date Field' },
                     { name: 'datetime_field', type: 'datetime', string: 'Date & Time Field' },
+                    { name: 'file_field', type: 'binary', string: 'File Field' },
                 ],
                 settings: {}
             });
@@ -426,6 +452,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
             this.state.form_fields.forEach((field) => {
                 field.required = newSettings.required;
                 field.readonly = newSettings.readonly;
+                field.invisible = newSettings.invisible;
                 field.placeholder = newSettings.placeholder;
             });
         }

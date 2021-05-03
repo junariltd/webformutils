@@ -47,6 +47,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
                     selection: [['opt1','Option 1'],['opt2','Option 2'],['opt3','Option 3']] },
                 { name: 'date_field', type: 'date', string: 'Date Field' },
                 { name: 'datetime_field', type: 'datetime', string: 'Date & Time Field' },
+                { name: 'file_field', type: 'binary', string: 'File Field' },
             ],
             settings: {
             }

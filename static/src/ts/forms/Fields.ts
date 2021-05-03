@@ -5,9 +5,8 @@ import { IOWLEnv } from '../owl_env';
 import { IFormContext } from './Form';
 
 export type FieldType = 'char' | 'text' | 'date' | 'datetime' |
-    'float' | 'integer' | 'boolean' |
-    'selection' | 'many2one' |  'html' | 'attachments' |
-    'tag' | 'many2many';
+    'float' | 'integer' | 'boolean' | 'binary' |
+    'selection' | 'many2one' | 'many2many' ;
 
 export interface IFieldMeta {
     name: string;
@@ -263,7 +262,7 @@ DateField.template = tags.xml /* xml */ `
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
+            t-att-value="rawValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
@@ -279,7 +278,7 @@ DateTimeField.template = tags.xml /* xml */ `
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
+            t-att-value="rawValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
@@ -321,7 +320,6 @@ BooleanField.template = tags.xml /* xml */ `
         </label>
     </FieldWrapper>
 `
-
 export class SelectField extends BaseField {}
 SelectField.components = { FieldWrapper }
 SelectField.template = tags.xml /* xml */ `
@@ -346,9 +344,25 @@ SelectField.template = tags.xml /* xml */ `
         </select>
     </FieldWrapper>
 `
-
+export class BinaryField extends BaseField {}
+BinaryField.components = { FieldWrapper }
+BinaryField.template = tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <input
+            type="file"
+            class="form-control-file"
+            t-att-name="props.field.name"
+            t-att-required="props.field.required"
+            t-att-value="formattedValue"
+            t-on-change="onChange"
+            t-att-placeholder="props.field.placeholder"
+            t-att-disabled="props.field.readonly"
+        />
+    </FieldWrapper>
+`
 export class FormField extends Component<IFieldProps, IOWLEnv>{}
-FormField.components = { CharField, TextField, NumberField, BooleanField, DateField, DateTimeField, SelectField }
+FormField.components = { CharField, TextField, NumberField, BooleanField,
+    DateField, DateTimeField, SelectField, BinaryField }
 FormField.template = tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -371,6 +385,9 @@ FormField.template = tags.xml /* xml */ `
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'binary'">
+            <BinaryField t-props="props" />
         </t>
     </div>
 `
