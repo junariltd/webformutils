@@ -6,7 +6,7 @@ import { IFormContext } from './Form';
 
 export type FieldType = 'char' | 'text' | 'date' | 'datetime' |
     'float' | 'integer' | 'boolean' | 'binary' |
-    'selection' | 'many2one' | 'many2many' ;
+    'selection' | 'multiselect' | 'many2one' | 'many2many' ;
 
 export interface IFieldMeta {
     name: string;
@@ -55,11 +55,17 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
 
     onChange(ev: Event) {
         const input = ev.target as HTMLInputElement;
-        if (input.getAttribute('type') == 'checkbox') {
+        if (this.props.field.type == 'boolean') {
             this.setValue(input.checked == true);
         }
-        else if (input.getAttribute('aria-label') === 'multiple'){
-            this.setValueMultiple(input);
+        else if (this.props.field.type == 'multiselect' || this.props.field.type == 'many2many') {
+            const value = input.value;
+            if (input.checked == true) {
+                this.multiSelectValue(value);
+            }
+            else {
+                this.multiDeselectValue(value);
+            }
         }
         else {
             this.setValue(input.value);
@@ -70,9 +76,26 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
         this.form.setValues({ [this.props.field.name]: value });
     }
 
-    setValueMultiple(input: any) {
-        let values = Array.from(input.selectedOptions).map((v: any) => v.value);
-        this.form.setValues({ [this.props.field.name]: values})
+    multiIsSelected(value: any) {
+        const selectedValues = this.rawValue || [];
+        return selectedValues.indexOf(value) > -1;
+    }
+
+    multiSelectValue(value: any) {
+        const selectedValues = this.rawValue || [];
+        if (!this.multiIsSelected(value)) {
+            selectedValues.push(value);
+            this.setValue(selectedValues);
+        }
+    }
+
+    multiDeselectValue(value: any) {
+        const selectedValues = this.rawValue || [];
+        const valueIdx = selectedValues.indexOf(value);
+        if (valueIdx > -1) {
+            selectedValues.splice(valueIdx, 1);
+            this.setValue(selectedValues);
+        }
     }
 
     validate() {
@@ -351,6 +374,29 @@ SelectField.template = tags.xml /* xml */ `
         </select>
     </FieldWrapper>
 `
+export class MultiSelectField extends BaseField {}
+MultiSelectField.components = { FieldWrapper }
+MultiSelectField.template = tags.xml /* xml */ `
+    <FieldWrapper t-props="props">
+        <div class="card">  
+            <div class="card-body p-2">
+                <div class="form-check" t-foreach="props.field.selection || []" t-as="sel_option">
+                    <label class="form-check-label">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            t-att-value="sel_option[0]"
+                            t-att-checked="multiIsSelected(sel_option[0])"
+                            t-on-click="onChange"
+                            t-att-disabled="props.field.readonly"
+                        />
+                        <t t-esc="sel_option[1]" />
+                    </label>
+                </div>
+            </div>
+        </div>
+    </FieldWrapper>
+`
 export class BinaryField extends BaseField {}
 BinaryField.components = { FieldWrapper }
 BinaryField.template = tags.xml /* xml */ `
@@ -369,7 +415,7 @@ BinaryField.template = tags.xml /* xml */ `
 `
 export class FormField extends Component<IFieldProps, IOWLEnv>{}
 FormField.components = { CharField, TextField, NumberField, BooleanField,
-    DateField, DateTimeField, SelectField, BinaryField }
+    DateField, DateTimeField, SelectField, MultiSelectField, BinaryField }
 FormField.template = tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -392,6 +438,9 @@ FormField.template = tags.xml /* xml */ `
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'multiselect' || props.field.type == 'many2many'">
+            <MultiSelectField t-props="props" />
         </t>
         <t t-if="props.field.type == 'binary'">
             <BinaryField t-props="props" />

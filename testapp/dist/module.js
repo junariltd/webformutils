@@ -7,7 +7,7 @@ define("jowebutils.owl_env", ["require", "exports"], function (require, exports)
 define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function (require, exports, owl_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FormField = exports.BinaryField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
+    exports.FormField = exports.BinaryField = exports.MultiSelectField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
     class BaseField extends owl_1.Component {
         constructor() {
             super(...arguments);
@@ -23,11 +23,17 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         }
         onChange(ev) {
             const input = ev.target;
-            if (input.getAttribute('type') == 'checkbox') {
+            if (this.props.field.type == 'boolean') {
                 this.setValue(input.checked == true);
             }
-            else if (input.getAttribute('aria-label') === 'multiple') {
-                this.setValueMultiple(input);
+            else if (this.props.field.type == 'multiselect' || this.props.field.type == 'many2many') {
+                const value = input.value;
+                if (input.checked == true) {
+                    this.multiSelectValue(value);
+                }
+                else {
+                    this.multiDeselectValue(value);
+                }
             }
             else {
                 this.setValue(input.value);
@@ -36,9 +42,24 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         setValue(value) {
             this.form.setValues({ [this.props.field.name]: value });
         }
-        setValueMultiple(input) {
-            let values = Array.from(input.selectedOptions).map((v) => v.value);
-            this.form.setValues({ [this.props.field.name]: values });
+        multiIsSelected(value) {
+            const selectedValues = this.rawValue || [];
+            return selectedValues.indexOf(value) > -1;
+        }
+        multiSelectValue(value) {
+            const selectedValues = this.rawValue || [];
+            if (!this.multiIsSelected(value)) {
+                selectedValues.push(value);
+                this.setValue(selectedValues);
+            }
+        }
+        multiDeselectValue(value) {
+            const selectedValues = this.rawValue || [];
+            const valueIdx = selectedValues.indexOf(value);
+            if (valueIdx > -1) {
+                selectedValues.splice(valueIdx, 1);
+                this.setValue(selectedValues);
+            }
         }
         validate() {
             const errors = [];
@@ -253,6 +274,31 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </select>
     </FieldWrapper>
 `;
+    class MultiSelectField extends BaseField {
+    }
+    exports.MultiSelectField = MultiSelectField;
+    MultiSelectField.components = { FieldWrapper };
+    MultiSelectField.template = owl_1.tags.xml /* xml */ `
+    <FieldWrapper t-props="props">
+        <div class="card">  
+            <div class="card-body p-2">
+                <div class="form-check" t-foreach="props.field.selection || []" t-as="sel_option">
+                    <label class="form-check-label">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            t-att-value="sel_option[0]"
+                            t-att-checked="multiIsSelected(sel_option[0])"
+                            t-on-click="onChange"
+                            t-att-disabled="props.field.readonly"
+                        />
+                        <t t-esc="sel_option[1]" />
+                    </label>
+                </div>
+            </div>
+        </div>
+    </FieldWrapper>
+`;
     class BinaryField extends BaseField {
     }
     exports.BinaryField = BinaryField;
@@ -275,7 +321,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     }
     exports.FormField = FormField;
     FormField.components = { CharField, TextField, NumberField, BooleanField,
-        DateField, DateTimeField, SelectField, BinaryField };
+        DateField, DateTimeField, SelectField, MultiSelectField, BinaryField };
     FormField.template = owl_1.tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
@@ -298,6 +344,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </t>
         <t t-if="props.field.type == 'selection' || props.field.type == 'many2one'">
             <SelectField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'multiselect' || props.field.type == 'many2many'">
+            <MultiSelectField t-props="props" />
         </t>
         <t t-if="props.field.type == 'binary'">
             <BinaryField t-props="props" />
@@ -450,6 +499,8 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                     { name: 'integer_field', type: 'integer', string: 'Integer Field' },
                     { name: 'boolean_field', type: 'boolean', string: 'Boolean Field' },
                     { name: 'selection_field', type: 'selection', string: 'Selection Field',
+                        selection: [['opt1', 'Option 1'], ['opt2', 'Option 2'], ['opt3', 'Option 3']] },
+                    { name: 'multiselect_field', type: 'multiselect', string: 'Multiple Selection Field',
                         selection: [['opt1', 'Option 1'], ['opt2', 'Option 2'], ['opt3', 'Option 3']] },
                     { name: 'date_field', type: 'date', string: 'Date Field' },
                     { name: 'datetime_field', type: 'datetime', string: 'Date & Time Field' },
