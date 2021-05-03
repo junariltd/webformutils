@@ -197,7 +197,8 @@ class FieldWrapper extends Component<IFieldProps> {}
 FieldWrapper.template = tags.xml /* xml */ `
     <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
             + (props.field.invisible ? ' d-none' : '')">
-        <label t-if="!props.field.invisible" t-att-for="props.field.name"
+        <label t-if="!props.field.invisible"
+            t-att-for="props.field.name"
             class="col-sm-3 col-form-label"
             t-att-data-toggle="props.field.tooltip ? 'tooltip' : ''"
             t-att-data-placement="props.field.tooltip ? 'top' : ''"
@@ -224,17 +225,10 @@ CharField.template = tags.xml /* xml */ `
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
         />
-        <div t-if="!props.field.readonly">
-            <small t-if="props.field.required" class="form-text text-muted">Required</small>
-            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
-        </div>
         <div
             t-if="props.field.readonly"
             class="form-control disabled">
             <t t-esc="formattedValue" />
-        </div>
-        <div t-if="props.field.readonly">
-            <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
 `
@@ -242,27 +236,21 @@ export class BooleanField extends BaseField {}
 BooleanField.components = { FieldWrapper }
 BooleanField.template = tags.xml /* xml */ `
     <FieldWrapper field="props.field">
-        <input
-            t-if="!props.field.readonly"
-            type="checkbox"
-            class="form-control"
-            t-att-name="props.field.name"
-            t-att-required="props.field.required"
-            t-att-value="true"
-            t-att-checked="rawValue"
-            t-on-change="onChange"
-        />
-        <div t-if="!props.field.readonly">
-            <small t-if="props.field.required" class="form-text text-muted">Required</small>
-            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
-        </div>
+        <label class="joweb-check">
+            <input
+                t-if="!props.field.readonly"
+                type="checkbox"
+                t-att-name="props.field.name"
+                t-att-required="props.field.required"
+                t-att-value="true"
+                t-att-checked="rawValue"
+                t-on-change="onChange"
+            />
+        </label>
         <div
             t-if="props.field.readonly"
             class="form-control disabled">
             <t t-esc="formattedValue" />
-        </div>
-        <div t-if="props.field.readonly">
-            <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
 `
@@ -289,17 +277,10 @@ SelectField.template = tags.xml /* xml */ `
                 ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
-        <div t-if="!props.field.readonly">
-            <small t-if="props.field.required" class="form-text text-muted">Required</small>
-            <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
-        </div>
         <div
             t-if="props.field.readonly"
             class="form-control disabled">
             <t t-esc="formattedValue" />
-        </div>
-        <div t-if="props.field.readonly">
-            <small class="form-text text-muted" style="color: transparent !important;">_</small>
         </div>
     </FieldWrapper>
 `
@@ -325,17 +306,10 @@ TagField.template = tags.xml /* xml */ `
             ><t t-esc="sel_option[1]"/></option>
         </t>
     </select>
-    <div t-if="!props.field.readonly">
-        <small t-if="props.field.required" class="form-text text-muted">Required</small>
-        <small t-if="!props.field.required" class="form-text text-muted" style="color: transparent !important;">_</small>
-    </div>
     <div
         t-if="props.field.readonly"
         class="form-control disabled">
         <t t-esc="formattedValue" />
-    </div>
-    <div t-if="props.field.readonly">
-        <small class="form-text text-muted" style="color: transparent !important;">_</small>
     </div>
 </FieldWrapper>
 `

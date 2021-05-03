@@ -2,6 +2,14 @@
     font-weight: normal;
 }
 
+/* .jobweb-field {
+    padding: 16px;
+} */
+.joweb-field .joweb-check {
+    display: block;
+    padding: 8px 0;
+}
+
 .joweb-field.joweb-field-required .col-form-label {
     font-weight: bold;
 }
