@@ -10,8 +10,8 @@
     padding: 8px 0;
 }
 
-.joweb-field.joweb-field-required .col-form-label {
-    font-weight: bold;
+.joweb-field.joweb-field-required .form-control {
+    border-color: #444;
 }
 
 .joweb-field.joweb-field-has-error .col-form-label {

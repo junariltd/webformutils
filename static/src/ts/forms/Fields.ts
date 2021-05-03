@@ -205,7 +205,8 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
 class FieldWrapper extends Component<IFieldProps> {}
 FieldWrapper.template = tags.xml /* xml */ `
     <div t-att-class="(!props.field.invisible ? 'form-group row joweb-field' : '')
-            + (props.field.invisible ? ' d-none' : '')">
+            + (props.field.invisible ? ' d-none' : '')
+            + (props.field.required ? ' joweb-field-required' : '')">
         <label t-if="!props.field.invisible"
             t-att-for="props.field.name"
             class="col-sm-3 col-form-label"
@@ -247,20 +248,15 @@ BooleanField.template = tags.xml /* xml */ `
     <FieldWrapper field="props.field">
         <label class="joweb-check">
             <input
-                t-if="!props.field.readonly"
                 type="checkbox"
                 t-att-name="props.field.name"
                 t-att-required="props.field.required"
                 t-att-value="true"
                 t-att-checked="rawValue"
                 t-on-click="onChange"
+                t-att-disabled="props.field.readonly"
             />
         </label>
-        <div
-            t-if="props.field.readonly"
-            class="form-control disabled">
-            <t t-esc="formattedValue" />
-        </div>
     </FieldWrapper>
 `
 
