@@ -242,6 +242,24 @@ CharField.template = tags.xml /* xml */ `
         </div>
     </FieldWrapper>
 `
+export class TextField extends BaseField {}
+TextField.components = { FieldWrapper }
+TextField.template = tags.xml /* xml */ `
+    <FieldWrapper field="props.field">
+        <div class="grow-wrap">
+            <textarea
+                class="form-control"
+                t-att-name="props.field.name"
+                t-att-required="props.field.required"
+                t-att-value="formattedValue"
+                t-on-change="onChange"
+                t-att-placeholder="props.field.placeholder"
+                t-att-disabled="props.field.readonly"
+                onInput="this.parentNode.dataset.replicatedValue = this.value"
+            />
+        </div>
+    </FieldWrapper>
+`
 export class BooleanField extends BaseField {}
 BooleanField.components = { FieldWrapper }
 BooleanField.template = tags.xml /* xml */ `
@@ -320,11 +338,14 @@ TagField.template = tags.xml /* xml */ `
 `
 
 export class FormField extends Component<IFieldProps, IOWLEnv>{}
-FormField.components = { CharField, BooleanField, SelectField, TagField }
+FormField.components = { CharField, TextField, BooleanField, SelectField, TagField }
 FormField.template = tags.xml /* xml */ `
     <div>
         <t t-if="props.field.type == 'char'">
             <CharField t-props="props" />
+        </t>
+        <t t-if="props.field.type == 'text'">
+            <TextField t-props="props" />
         </t>
         <t t-if="props.field.type == 'boolean'">
             <BooleanField t-props="props" />

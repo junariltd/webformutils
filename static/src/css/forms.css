@@ -1,25 +1,38 @@
 .joweb-field .col-form-label {
     font-weight: normal;
 }
-
-/* .jobweb-field {
-    padding: 16px;
-} */
 .joweb-field .joweb-check {
     display: block;
     padding: 8px 0;
 }
-
 .joweb-field.joweb-field-required .form-control {
     border-color: #444;
 }
-
 .joweb-field.joweb-field-has-error .col-form-label {
     color: #dc3545;
 }
-
 .joweb-field.joweb-field-has-error .form-control {
     border-color: #dc3545;
+}
+
+/* https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/ */
+.joweb-field .grow-wrap {
+    display: grid;
+}
+.joweb-field .grow-wrap::after {
+    content: attr(data-replicated-value) " ";
+    white-space: pre-wrap;
+    visibility: hidden;
+}
+.joweb-field .grow-wrap > textarea {
+    resize: none;
+    overflow: hidden;
+}
+.joweb-field .grow-wrap > textarea,
+.joweb-field .grow-wrap::after {
+    padding: 0.5rem;
+    font: inherit;
+    grid-area: 1 / 1 / 2 / 2;
 }
 
 .joweb-html-field-content p {
