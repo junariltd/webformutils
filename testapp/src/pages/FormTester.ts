@@ -5,10 +5,11 @@ import { Component, tags, hooks } from '@odoo/owl';
 import { IOWLEnv } from '@jowebutils/owl_env';
 import { Form, OwlEvent } from '@jowebutils/forms/Form';
 import { FormField, IFieldMeta } from '@jowebutils/forms/Fields';
+import { Tabs } from '@jowebutils/widgets/Tabs';
 
 export interface IFormTesterState {
     initial_settings: { [setting: string]: any };
-    settings_fields: IFieldMeta[];
+    settings_fields: { [type: string]: IFieldMeta[] };
     form_fields: IFieldMeta[];
 }
 
@@ -20,13 +21,20 @@ export class FormTester extends Component<{}, IOWLEnv> {
         this.state = hooks.useState({
             initial_settings: {
                 required: false,
-                readonly: false
+                readonly: false,
+                mode: 'edit',
             },
-            settings_fields: [
-                { name: 'required', type: 'boolean', string: 'Required' },
-                { name: 'readonly', type: 'boolean', string: 'Readonly' },
-                { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
-            ],
+            settings_fields: {
+                attribs: [
+                    { name: 'required', type: 'boolean', string: 'Required' },
+                    { name: 'readonly', type: 'boolean', string: 'Readonly' },
+                    { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
+                ],
+                mode: [
+                    { name: 'mode', type: 'selection', string: 'Form Mode',
+                        selection: [['view', 'View Mode'],['edit', 'Edit Mode']]},
+                ]
+            },
             form_fields: [
                 { name: 'char_field', type: 'char', string: 'Char Field' },
                 { name: 'text_field', type: 'text', string: 'Text Field' },
@@ -51,7 +59,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
         console.log('submitted');
     }
 }
-FormTester.components = { Form, FormField }
+FormTester.components = { Form, FormField, Tabs }
 FormTester.template = tags.xml /* xml */ `
     <div class="container">
         <div class="row">
@@ -65,9 +73,23 @@ FormTester.template = tags.xml /* xml */ `
                     <Form name="'settings'" initialValues="state.initial_settings"
                             t-on-values-changed="onSettingsChanged">
                         <div class="card-body p-4">
-                            <t t-foreach="state.settings_fields" t-as="field" t-key="field.name">
-                                <FormField form="'settings'" field="field" />
-                            </t>
+
+                            <Tabs tabs="[
+                                { tab: 'attribs', string: 'Field Attribs' },
+                                { tab: 'mode', string: 'Form Mode' }
+                            ]">
+                                <t t-set-slot="attribs">
+                                    <t t-foreach="state.settings_fields.attribs" t-as="field" t-key="field.name">
+                                        <FormField form="'settings'" field="field" />
+                                    </t>
+                                </t>
+                                <t t-set-slot="mode">
+                                    <t t-foreach="state.settings_fields.mode" t-as="field" t-key="field.name">
+                                        <FormField form="'settings'" field="field" />
+                                    </t>
+                                </t>
+                            </Tabs>
+
                         </div>
                     </Form>
                 </div>

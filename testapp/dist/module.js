@@ -321,24 +321,71 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
     </form>
 `;
 });
+///<amd-module name='jowebutils.widgets.Tabs'/>
+define("jowebutils.widgets.Tabs", ["require", "exports", "@odoo/owl"], function (require, exports, owl_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Tabs = void 0;
+    // active
+    class Tabs extends owl_3.Component {
+        constructor() {
+            super(...arguments);
+            if (!this.props.tabs)
+                throw new Error('No tabs defined!');
+            this.state = owl_3.useState({
+                activeTab: this.props.tabs[0].tab
+            });
+        }
+        onClickTab(ev) {
+            ev.preventDefault();
+            const tab = ev.target.dataset.tab;
+            this.state.activeTab = tab;
+        }
+    }
+    exports.Tabs = Tabs;
+    Tabs.template = owl_3.tags.xml /* xml */ `
+    <div>
+        <ul class="nav nav-tabs mb-4">
+            <li t-foreach="props.tabs" t-as="tab" t-key="tab_index" class="nav-item">
+                <a
+                    t-att-class="'nav-link' + (tab.tab == state.activeTab ? ' active' : '')"
+                    t-att-data-tab="tab.tab"
+                    t-on-click="onClickTab"
+                    href="#"><t t-esc="tab.string" /></a>
+            </li>
+        </ul>
+        <div t-foreach="props.tabs" t-as="tab" t-key="tab_index"
+            t-att-class="tab.tab == state.activeTab ? '' : 'd-none'">
+            <t t-slot="{{tab.tab}}" />
+        </div>
+    </div>
+`;
+});
 ///<amd-module name='jowebutils.testapp.FormTester'/>
-define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jowebutils.forms.Form", "jowebutils.forms.Fields"], function (require, exports, owl_3, Form_1, Fields_1) {
+define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jowebutils.forms.Form", "jowebutils.forms.Fields", "jowebutils.widgets.Tabs"], function (require, exports, owl_4, Form_1, Fields_1, Tabs_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.FormTester = void 0;
-    class FormTester extends owl_3.Component {
+    class FormTester extends owl_4.Component {
         constructor() {
             super(...arguments);
-            this.state = owl_3.hooks.useState({
+            this.state = owl_4.hooks.useState({
                 initial_settings: {
                     required: false,
-                    readonly: false
+                    readonly: false,
+                    mode: 'edit',
                 },
-                settings_fields: [
-                    { name: 'required', type: 'boolean', string: 'Required' },
-                    { name: 'readonly', type: 'boolean', string: 'Readonly' },
-                    { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
-                ],
+                settings_fields: {
+                    attribs: [
+                        { name: 'required', type: 'boolean', string: 'Required' },
+                        { name: 'readonly', type: 'boolean', string: 'Readonly' },
+                        { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
+                    ],
+                    mode: [
+                        { name: 'mode', type: 'selection', string: 'Form Mode',
+                            selection: [['view', 'View Mode'], ['edit', 'Edit Mode']] },
+                    ]
+                },
                 form_fields: [
                     { name: 'char_field', type: 'char', string: 'Char Field' },
                     { name: 'text_field', type: 'text', string: 'Text Field' },
@@ -361,8 +408,8 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
         }
     }
     exports.FormTester = FormTester;
-    FormTester.components = { Form: Form_1.Form, FormField: Fields_1.FormField };
-    FormTester.template = owl_3.tags.xml /* xml */ `
+    FormTester.components = { Form: Form_1.Form, FormField: Fields_1.FormField, Tabs: Tabs_1.Tabs };
+    FormTester.template = owl_4.tags.xml /* xml */ `
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
@@ -375,9 +422,23 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                     <Form name="'settings'" initialValues="state.initial_settings"
                             t-on-values-changed="onSettingsChanged">
                         <div class="card-body p-4">
-                            <t t-foreach="state.settings_fields" t-as="field" t-key="field.name">
-                                <FormField form="'settings'" field="field" />
-                            </t>
+
+                            <Tabs tabs="[
+                                { tab: 'attribs', string: 'Field Attribs' },
+                                { tab: 'mode', string: 'Form Mode' }
+                            ]">
+                                <t t-set-slot="attribs">
+                                    <t t-foreach="state.settings_fields.attribs" t-as="field" t-key="field.name">
+                                        <FormField form="'settings'" field="field" />
+                                    </t>
+                                </t>
+                                <t t-set-slot="mode">
+                                    <t t-foreach="state.settings_fields.mode" t-as="field" t-key="field.name">
+                                        <FormField form="'settings'" field="field" />
+                                    </t>
+                                </t>
+                            </Tabs>
+
                         </div>
                     </Form>
                 </div>
@@ -402,18 +463,18 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
 `;
 });
 ///<amd-module name='jowebutils.testapp.main'/>
-define("jowebutils.testapp.main", ["require", "exports", "@odoo/owl", "jowebutils.testapp.FormTester"], function (require, exports, owl_4, FormTester_1) {
+define("jowebutils.testapp.main", ["require", "exports", "@odoo/owl", "jowebutils.testapp.FormTester"], function (require, exports, owl_5, FormTester_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     // import { WidgetsTester } from './pages/WidgetsTester';
-    owl_4.mount(FormTester_1.FormTester, { target: document.getElementById('app') });
+    owl_5.mount(FormTester_1.FormTester, { target: document.getElementById('app') });
 });
 ///<amd-module name='jowebutils.widgets.Table'/>
-define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function (require, exports, owl_5) {
+define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function (require, exports, owl_6) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Table = void 0;
-    class Table extends owl_5.Component {
+    class Table extends owl_6.Component {
         formatValue(value) {
             if (value instanceof Array && value.length == 2 && !isNaN(value[0])) {
                 return value[1]; // many2one value (id, name). Return name.
@@ -429,7 +490,7 @@ define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function
         }
     }
     exports.Table = Table;
-    Table.template = owl_5.tags.xml /* xml */ `
+    Table.template = owl_6.tags.xml /* xml */ `
     <div class="table-responsive border rounded border-top-0">
         <table class="table rounded mb-0 bg-white o_portal_my_doc_table jowebutils-table">
             <tr>
@@ -452,14 +513,14 @@ define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function
 `;
 });
 ///<amd-module name='jowebutils.testapp.WidgetsTester'/>
-define("jowebutils.testapp.WidgetsTester", ["require", "exports", "@odoo/owl", "jowebutils.widgets.Table"], function (require, exports, owl_6, Table_1) {
+define("jowebutils.testapp.WidgetsTester", ["require", "exports", "@odoo/owl", "jowebutils.widgets.Table"], function (require, exports, owl_7, Table_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WidgetsTester = void 0;
-    class WidgetsTester extends owl_6.Component {
+    class WidgetsTester extends owl_7.Component {
         constructor() {
             super(...arguments);
-            this.state = owl_6.hooks.useState({
+            this.state = owl_7.hooks.useState({
                 cols: [
                     { name: 'id', string: 'ID' },
                     { name: 'item', string: 'Item' },
@@ -475,7 +536,7 @@ define("jowebutils.testapp.WidgetsTester", ["require", "exports", "@odoo/owl", "
     }
     exports.WidgetsTester = WidgetsTester;
     WidgetsTester.components = { Table: Table_1.Table };
-    WidgetsTester.template = owl_6.tags.xml /* xml */ `
+    WidgetsTester.template = owl_7.tags.xml /* xml */ `
     <div class="container">
         <div class="row">
             <div class="col-md-10 offset-md-1">
@@ -496,21 +557,21 @@ define("jowebutils.testapp.WidgetsTester", ["require", "exports", "@odoo/owl", "
 `;
 });
 ///<amd-module name='jowebutils.owl_app'/>
-define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rpc", "web.session", "web.OwlCompatibility", "@odoo/owl"], function (require, exports, publicWidget, rpc, session, web_OwlCompatibility_1, owl_7) {
+define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rpc", "web.session", "web.OwlCompatibility", "@odoo/owl"], function (require, exports, publicWidget, rpc, session, web_OwlCompatibility_1, owl_8) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createOWLApp = void 0;
-    class App extends owl_7.Component {
+    class App extends owl_8.Component {
     }
-    App.components = { RouteComponent: owl_7.router.RouteComponent };
-    App.template = owl_7.tags.xml `<RouteComponent />`;
+    App.components = { RouteComponent: owl_8.router.RouteComponent };
+    App.template = owl_8.tags.xml `<RouteComponent />`;
     function createOWLApp(appDef) {
         return publicWidget.Widget.extend(web_OwlCompatibility_1.WidgetAdapterMixin, {
             selector: appDef.selector,
             init: function () {
                 this.owl_component = new web_OwlCompatibility_1.ComponentWrapper(this, App);
                 const env = this.owl_component.env;
-                env.router = new owl_7.router.Router(this.owl_component.env, appDef.routes);
+                env.router = new owl_8.router.Router(this.owl_component.env, appDef.routes);
                 this.populateOWLEnv();
             },
             populateOWLEnv: function () {
@@ -532,7 +593,7 @@ define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rp
                 const loadPromises = [];
                 if (appDef.xmlDependencies) {
                     for (let dep of appDef.xmlDependencies) {
-                        loadPromises.push(owl_7.utils.loadFile(dep));
+                        loadPromises.push(owl_8.utils.loadFile(dep));
                     }
                 }
                 const templateFiles = await Promise.all(loadPromises);
@@ -575,19 +636,19 @@ define("jowebutils.querystring", ["require", "exports"], function (require, expo
     exports.getAllQueryStringValues = getAllQueryStringValues;
 });
 ///<amd-module name='jowebutils.forms.TagFieldInput'/>
-define("jowebutils.forms.TagFieldInput", ["require", "exports", "@odoo/owl"], function (require, exports, owl_8) {
+define("jowebutils.forms.TagFieldInput", ["require", "exports", "@odoo/owl"], function (require, exports, owl_9) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TagInputField = void 0;
-    class TagInputField extends owl_8.Component {
+    class TagInputField extends owl_9.Component {
         constructor() {
             super(...arguments);
-            this.state = owl_8.hooks.useState({
+            this.state = owl_9.hooks.useState({
                 value: null,
                 colour: null,
             });
-            this.form = owl_8.hooks.useContext(this.env.formContext);
-            this.input = owl_8.hooks.useContext(this.env.input);
+            this.form = owl_9.hooks.useContext(this.env.formContext);
+            this.input = owl_9.hooks.useContext(this.env.input);
         }
         onChange(ev) {
             const e = ev.target;
@@ -616,11 +677,11 @@ define("jowebutils.forms.TagFieldInput", ["require", "exports", "@odoo/owl"], fu
     exports.TagInputField = TagInputField;
 });
 ///<amd-module name='jowebutils.widgets.NavBar'/>
-define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], function (require, exports, owl_9) {
+define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], function (require, exports, owl_10) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.NavBar = void 0;
-    class NavBar extends owl_9.Component {
+    class NavBar extends owl_10.Component {
         onClickBreadcrumb(ev) {
             ev.preventDefault();
             const breadcrumbIndex = ev.target.dataset.index; // from data-index attribute
@@ -630,7 +691,7 @@ define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], functio
         }
     }
     exports.NavBar = NavBar;
-    NavBar.template = owl_9.tags.xml /* xml */ `
+    NavBar.template = owl_10.tags.xml /* xml */ `
     <nav t-attf-class="navbar navbar-light navbar-expand-lg border py-0 mb-2 o_portal_navbar mt-3 rounded">
         <ol class="o_portal_submenu breadcrumb mb-0 py-2 flex-grow-1">
             <li class="breadcrumb-item"><a href="/my/home" aria-label="Home" title="Home"><i class="fa fa-home"/></a></li>

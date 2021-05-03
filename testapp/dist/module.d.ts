@@ -106,6 +106,26 @@ declare module "jowebutils.forms.Form" {
         onSubmit(ev: Event): void;
     }
 }
+/// <amd-module name="jowebutils.widgets.Tabs" />
+declare module "jowebutils.widgets.Tabs" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    export interface ITabDef {
+        tab: string;
+        string: string;
+    }
+    export interface ITabsProps {
+        tabs: ITabDef[];
+    }
+    export interface ITabsState {
+        activeTab: string;
+    }
+    export class Tabs extends Component<ITabsProps, IOWLEnv> {
+        state: ITabsState;
+        constructor();
+        onClickTab(ev: any): void;
+    }
+}
 /// <amd-module name="jowebutils.testapp.FormTester" />
 declare module "jowebutils.testapp.FormTester" {
     import { Component } from '@odoo/owl';
@@ -116,7 +136,9 @@ declare module "jowebutils.testapp.FormTester" {
         initial_settings: {
             [setting: string]: any;
         };
-        settings_fields: IFieldMeta[];
+        settings_fields: {
+            [type: string]: IFieldMeta[];
+        };
         form_fields: IFieldMeta[];
     }
     export class FormTester extends Component<{}, IOWLEnv> {
