@@ -22,12 +22,14 @@ export class FormTester extends Component<{}, IOWLEnv> {
             initial_settings: {
                 required: false,
                 readonly: false,
+                invisible: false,
                 mode: 'edit',
             },
             settings_fields: {
                 attribs: [
                     { name: 'required', type: 'boolean', string: 'Required' },
                     { name: 'readonly', type: 'boolean', string: 'Readonly' },
+                    { name: 'invisible', type: 'boolean', string: 'Invisible' },
                     { name: 'placeholder', type: 'char', string: 'Placeholder Text' },
                 ],
                 mode: [
@@ -57,6 +59,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
         this.state.form_fields.forEach((field) => {
             field.required = newSettings.required;
             field.readonly = newSettings.readonly;
+            field.invisible = newSettings.invisible;
             field.placeholder = newSettings.placeholder;
         })
     }
