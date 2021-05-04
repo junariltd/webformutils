@@ -426,6 +426,9 @@ FormField.template = tags.xml /* xml */ `
         <t t-if="props.field.type == 'text'">
             <TextField t-props="props" />
         </t>
+        <t t-if="props.field.type == 'html'">
+            <TextField t-props="props" />
+        </t>
         <t t-if="props.field.type == 'float' || props.field.type == 'integer'">
             <NumberField t-props="props" />
         </t>
