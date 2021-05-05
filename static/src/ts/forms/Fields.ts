@@ -331,6 +331,7 @@ TextField.template = tags.xml /* xml */ `
                 t-att-placeholder="props.field.placeholder"
                 t-att-disabled="props.field.readonly"
                 onInput="this.parentNode.dataset.replicatedValue = this.value"
+                rows="8"
             />
         </div>
     </FieldWrapper>

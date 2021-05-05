@@ -371,6 +371,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 t-att-placeholder="props.field.placeholder"
                 t-att-disabled="props.field.readonly"
                 onInput="this.parentNode.dataset.replicatedValue = this.value"
+                rows="8"
             />
         </div>
     </FieldWrapper>
