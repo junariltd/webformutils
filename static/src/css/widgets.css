@@ -29,3 +29,9 @@
 .o_owl_dialog .modal {
     display: block;
 }
+.o_owl_dialog .modal-header, .o_owl_dialog .modal-footer {
+    background: #ececec;
+}
+.o_owl_dialog .modal-body {
+    background: #fff;
+}
