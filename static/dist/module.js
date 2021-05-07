@@ -167,10 +167,34 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             this.form = owl_3.hooks.useContext(this.env.formContext[this.formName]);
             this.form.registerField(this.props.field.name, this);
         }
-        onChange(ev) {
+        toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        async onChange(ev) {
             const input = ev.target;
             if (this.props.field.type == 'boolean') {
                 this.setValue(input.checked == true);
+            }
+            else if (this.props.field.type == 'binary') {
+                if (input.files && input.files.length) {
+                    const file = input.files[0];
+                    const encoded = await this.toBase64(file);
+                    this.form.setValues({
+                        [this.props.field.name]: file.name,
+                        [this.props.field.name + '_data']: encoded,
+                    });
+                }
+                else {
+                    this.form.setValues({
+                        [this.props.field.name]: null,
+                        [this.props.field.name + '_data']: null,
+                    });
+                }
             }
             else if (this.props.field.type == 'multiselect' || this.props.field.type == 'many2many') {
                 const value = input.value;
@@ -457,7 +481,6 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             class="form-control-file"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"

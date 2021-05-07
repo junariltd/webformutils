@@ -102,7 +102,8 @@ declare module "jowebutils.forms.Fields" {
         state: IFieldState;
         form: IFormContext;
         constructor();
-        onChange(ev: Event): void;
+        toBase64(file: File): Promise<unknown>;
+        onChange(ev: Event): Promise<void>;
         setValue(value: any): void;
         multiIsSelected(value: any): boolean;
         multiSelectValue(value: any): void;
