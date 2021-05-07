@@ -11,6 +11,7 @@ odoo.define('web.OwlDialog', function (require) {
     const SIZE_CLASSES = {
         'extra-large': 'modal-xl',
         'large': 'modal-lg',
+        'medium': 'modal-md',
         'small': 'modal-sm',
     };
 
@@ -276,8 +277,9 @@ odoo.define('web.OwlDialog', function (require) {
 
     Dialog.template = tags.xml /* xml */ `
         <Portal target="'body'">
-            <div class="o_dialog" t-on-focus="_onFocus" t-on-click="_onClick">
-                <div role="dialog" class="modal"
+            <div class="o_owl_dialog" t-on-focus="_onFocus" t-on-click="_onClick">
+                <div class="modal-backdrop show"></div>
+                <div role="dialog" class="modal show"
                     tabindex="-1"
                     t-att-class="{ o_technical_modal: props.technical, o_modal_full: props.fullscreen }"
                     t-att-data-backdrop="'' + props.backdrop"

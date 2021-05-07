@@ -20,3 +20,12 @@
 .o_portal_submenu.breadcrumb {
     background: transparent;
 }
+
+/* OwlDialog styles */
+
+.o_owl_dialog {
+    position: static;
+}
+.o_owl_dialog .modal {
+    display: block;
+}
