@@ -56,7 +56,6 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
         this.form.registerField(this.props.field.name, this);
     }
 
-
     toBase64(file: File) {
         return new Promise((resolve, reject) => {
         const reader = new FileReader();

@@ -5,6 +5,7 @@ import { Component, tags, hooks } from '@odoo/owl';
 import { IOWLEnv } from '@jowebutils/owl_env';
 import { Form, OwlEvent } from '@jowebutils/forms/Form';
 import { FormField, IFieldMeta } from '@jowebutils/forms/Fields';
+import { Attachments } from '@jowebutils/forms/Attachments'
 import { Tabs } from '@jowebutils/widgets/Tabs';
 
 export interface IFormTesterState {
@@ -78,7 +79,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
         this.state.output = JSON.stringify(formValues, null, 2);
     }
 }
-FormTester.components = { Form, FormField, Tabs }
+FormTester.components = { Form, FormField, Attachments, Tabs }
 FormTester.template = tags.xml /* xml */ `
     <div class="container">
         <div class="row">
@@ -115,7 +116,7 @@ FormTester.template = tags.xml /* xml */ `
 
                 <div class="card shadow-sm mt-3">
                     <div class="card-header">
-                        <b>Form Output</b>
+                        <b>Form Components</b>
                     </div>
                     <Form t-on-submitted="onSubmitted">
                         <div class="card-body p-4">
@@ -127,9 +128,23 @@ FormTester.template = tags.xml /* xml */ `
                     </Form>
                 </div>
 
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header">
+                        <b>Attachments</b>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="form-group joweb-field row">
+                            <label for="attachments" class="col-sm-3 col-form-label">Attachments</label>
+                            <div class="col-sm-9">
+                                <Attachments buttonLabel="'Add Files...'" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card shadow-sm mt-3" t-if="state.output">
                     <div class="card-header">
-                        <b>Form Output</b>
+                        <b>Form Data</b>
                     </div>
                     <div class="card-body p-4">
                         <div t-esc="state.output" style="white-space: pre;" />

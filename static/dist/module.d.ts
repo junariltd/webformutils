@@ -35,6 +35,25 @@ declare module "jowebutils.querystring" {
     export function getURLQueryStringValue(url: string, param: string): string | null;
     export function getAllQueryStringValues(): URLSearchParams;
 }
+/// <amd-module name="jowebutils.forms.Attachments" />
+declare module "jowebutils.forms.Attachments" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    export interface IAttachmentsProps {
+        buttonLabel: string;
+        maxAttachments: number;
+    }
+    export interface IAttachmentsState {
+        controlId: string;
+        files: File[];
+    }
+    export class Attachments extends Component<IAttachmentsProps, IOWLEnv> {
+        state: IAttachmentsState;
+        constructor();
+        onFileInputChange(ev: any): void;
+        onRemove(ev: any): void;
+    }
+}
 /// <amd-module name="jowebutils.forms.Form" />
 declare module "jowebutils.forms.Form" {
     import { Component } from '@odoo/owl';

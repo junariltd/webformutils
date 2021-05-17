@@ -41,6 +41,11 @@
     grid-area: 1 / 1 / 2 / 2;
 }
 
+.joweb-attachments-del-btn {
+    padding: 8px;
+    cursor: pointer;
+}
+
 .joweb-html-field-content p {
     margin: 0;
 }

@@ -3,6 +3,7 @@ declare module "jowebutils.owl_env" {
     import { Env } from "@odoo/owl/dist/types/component/component";
     import { Router } from "@odoo/owl/dist/types/router/router";
     export interface IOWLEnv extends Env {
+        _t: (str: string) => string;
         router: Router;
         services: {
             rpc: (params: any, options?: any) => any;
@@ -23,15 +24,17 @@ declare module "jowebutils.forms.Fields" {
     import { IOWLEnv } from "jowebutils.owl_env";
     import { IFormContext } from "jowebutils.forms.Form";
     export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'binary' | 'selection' | 'multiselect' | 'many2one' | 'many2many';
+    export type SelectionOption = [string, string];
     export interface IFieldMeta {
         name: string;
         type: FieldType;
         string: string;
         placeholder?: string;
+        help?: string;
         invisible?: boolean;
         required?: boolean;
         readonly?: boolean;
-        selection?: [string, string][];
+        selection?: SelectionOption[];
     }
     export interface IFieldProps {
         form?: string;
@@ -50,7 +53,8 @@ declare module "jowebutils.forms.Fields" {
         state: IFieldState;
         form: IFormContext;
         constructor();
-        onChange(ev: Event): void;
+        toBase64(file: File): Promise<unknown>;
+        onChange(ev: Event): Promise<void>;
         setValue(value: any): void;
         multiIsSelected(value: any): boolean;
         multiSelectValue(value: any): void;
@@ -114,6 +118,24 @@ declare module "jowebutils.forms.Form" {
         setValues(values: IValues): void;
         valuesChanged(fieldsChanged: string[]): void;
         onSubmit(ev: Event): void;
+    }
+}
+/// <amd-module name="jowebutils.forms.Attachments" />
+declare module "jowebutils.forms.Attachments" {
+    import { Component } from '@odoo/owl';
+    import { IOWLEnv } from "jowebutils.owl_env";
+    export interface IAttachmentsProps {
+        buttonLabel: string;
+    }
+    export interface IAttachmentsState {
+        controlId: string;
+        files: File[];
+    }
+    export class Attachments extends Component<IAttachmentsProps, IOWLEnv> {
+        state: IAttachmentsState;
+        constructor();
+        onFileInputChange(ev: any): void;
+        onRemove(ev: any): void;
     }
 }
 /// <amd-module name="jowebutils.widgets.Tabs" />
