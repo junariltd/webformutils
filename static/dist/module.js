@@ -4,7 +4,7 @@ define("jowebutils.owl_env", ["require", "exports"], function (require, exports)
     Object.defineProperty(exports, "__esModule", { value: true });
 });
 ///<amd-module name='jowebutils.owl_app'/>
-define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rpc", "web.session", "web.OwlCompatibility", "@odoo/owl"], function (require, exports, publicWidget, rpc, session, web_OwlCompatibility_1, owl_1) {
+define("jowebutils.owl_app", ["require", "exports", "web.core", "web.public.widget", "web.rpc", "web.session", "web.OwlCompatibility", "@odoo/owl"], function (require, exports, core, publicWidget, rpc, session, web_OwlCompatibility_1, owl_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createOWLApp = void 0;
@@ -37,6 +37,7 @@ define("jowebutils.owl_app", ["require", "exports", "web.public.widget", "web.rp
             initOWLQWeb: async function () {
                 const env = this.owl_component.env;
                 const qweb = env.qweb;
+                qweb.translateFn = core._t;
                 const loadPromises = [];
                 if (appDef.xmlDependencies) {
                     for (let dep of appDef.xmlDependencies) {

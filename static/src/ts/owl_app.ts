@@ -2,12 +2,13 @@
 
 // Creates a OWL app entry point with the specified routes
 
+import * as core from 'web.core';
 import * as publicWidget from 'web.public.widget';
 import * as rpc from 'web.rpc';
 import * as session from 'web.session';
 
 import { ComponentWrapper, WidgetAdapterMixin } from 'web.OwlCompatibility';
-import { Component, tags, router, utils, QWeb } from '@odoo/owl';
+import { Component, tags, router, utils } from '@odoo/owl';
 import { Route } from '@odoo/owl/dist/types/router/router';
 import { IOWLEnv } from './owl_env';
 
@@ -50,6 +51,7 @@ export function createOWLApp(appDef: OWLAppDefinition) {
         initOWLQWeb: async function () {
             const env: IOWLEnv = this.owl_component.env;
             const qweb = env.qweb;
+            qweb.translateFn = core._t;
             const loadPromises = [];
             if (appDef.xmlDependencies) {
                 for (let dep of appDef.xmlDependencies) {
