@@ -15,6 +15,7 @@ export interface IFieldMeta {
     type: FieldType;
     string: string;
     placeholder?: string;
+    help?: string;
     invisible?: boolean;
     required?: boolean;
     readonly?: boolean;
@@ -188,23 +189,6 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
     //     }
     // }
 
-    // renderElement: function () {
-    //     this._super();
-    //     if (this.state.field.tooltip) {
-    //         this.$el.find('[data-toggle="tooltip"]').tooltip();
-    //     }
-    //     const onChange = this.state.field.onChange;
-    //     if (onChange) {
-    //         if (this.state.field.type == 'selection') {
-    //             const control = this.$('select').first();
-    //             control.change(onChange);
-    //         }
-    //         else {
-    //             const control = this.$('input').first();
-    //             control.change(onChange);
-    //         }
-    //     }
-
     //     if (this.state.field.type == "html") {
     //         const textarea = this.$('textarea.o_wysiwyg_loader').first();
     //         if (textarea && textarea.length > 0) {
@@ -278,6 +262,9 @@ FieldWrapper.template = tags.xml /* xml */ `
         </label>
         <div t-att-class="(props.labelPosition == 'above' ? inputClassAbove : inputClassLeft)">
             <t t-slot="default"/>
+            <small t-if="props.field.help" id="passwordHelpBlock" class="form-text text-muted">
+                <t t-esc="props.field.help" />
+            </small>
         </div>
     </div>
 `
@@ -359,7 +346,7 @@ TextField.template = tags.xml /* xml */ `
                 t-att-placeholder="props.field.placeholder"
                 t-att-disabled="props.field.readonly"
                 onInput="this.parentNode.dataset.replicatedValue = this.value"
-                rows="8"
+                rows="5"
             />
         </div>
     </FieldWrapper>

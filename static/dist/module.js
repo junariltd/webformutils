@@ -305,6 +305,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </label>
         <div t-att-class="(props.labelPosition == 'above' ? inputClassAbove : inputClassLeft)">
             <t t-slot="default"/>
+            <small t-if="props.field.help" id="passwordHelpBlock" class="form-text text-muted">
+                <t t-esc="props.field.help" />
+            </small>
         </div>
     </div>
 `;
@@ -396,7 +399,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 t-att-placeholder="props.field.placeholder"
                 t-att-disabled="props.field.readonly"
                 onInput="this.parentNode.dataset.replicatedValue = this.value"
-                rows="8"
+                rows="5"
             />
         </div>
     </FieldWrapper>
