@@ -26,6 +26,7 @@ define("jowebutils.owl_app", ["require", "exports", "web.core", "web.public.widg
                 // Try to mimic odoo 14+ where possible, to make porting easier
                 // https://github.com/odoo/odoo/blob/14.0/addons/web/static/src/js/common_env.js#L46
                 const env = this.owl_component.env;
+                env._t = core._t;
                 env.services = {
                     rpc: function (params, options) {
                         const query = rpc.buildQuery(params);

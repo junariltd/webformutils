@@ -39,6 +39,7 @@ export function createOWLApp(appDef: OWLAppDefinition) {
             // https://github.com/odoo/odoo/blob/14.0/addons/web/static/src/js/common_env.js#L46
 
             const env = this.owl_component.env;
+            env._t = core._t;
             env.services = {
                 rpc: function(params: any, options: any) {
                     const query = rpc.buildQuery(params);

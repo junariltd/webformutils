@@ -4,6 +4,7 @@ import { Env } from "@odoo/owl/dist/types/component/component";
 import { Router } from "@odoo/owl/dist/types/router/router";
 
 export interface IOWLEnv extends Env {
+    _t: (str: string) => string,
     router: Router;
     services: {
         rpc: (params: any, options?: any) => any;
