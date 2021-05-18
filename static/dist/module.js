@@ -132,31 +132,35 @@ define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], func
     Attachments.template = owl_2.tags.xml /* xml */ `
     <div>
         <div class="row">
-            <div class="joweb-attachments-file col-3"
+            <div class="joweb-attachments-file col-6 mb-4"
                 t-foreach="files" t-as="file" t-key="file_index">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card" style=" background-color: #EEEEEE !important;">
+                    <div class="card-body" style="background-color: #EEEEEE !important;">
                         <t t-esc="file.name" />
-                        <span class="fa fa-trash-o joweb-attachments-del-btn"
-                            title="Remove File"
-                            t-on-click="onRemove"
-                            t-att-data-index="file_index"></span>
+                        <div style="position: absolute; top: 0; right: 0; color: #dc3545; font-size: 1.5rem;">
+                            <span class="fa fa-trash-o joweb-attachments-del-btn"
+                                title="Remove File"
+                                t-on-click="onRemove"
+                                t-att-data-index="file_index"/>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <label t-att-for="state.controlId"
-                t-att-class="props.buttonClass ? props.buttonClass : 'btn btn-primary mt-2'"
-                t-esc="props.buttonLabel ? props.buttonLabel : 'Add Attachment(s)'" />
-            <input
-                t-att-id="state.controlId"
-                type="file"
-                class="form-control-file"
-                t-on-change="onFileInputChange"
-                multiple="1"
-                hidden="1"
-            />
+            <div class="col-12">
+                <label t-att-for="state.controlId"
+                    t-att-class="props.buttonClass ? props.buttonClass : 'btn btn-primary mt-2'"
+                    t-esc="props.buttonLabel ? props.buttonLabel : 'Add Attachment(s)'" />
+                <input
+                    t-att-id="state.controlId"
+                    type="file"
+                    class="form-control-file"
+                    t-on-change="onFileInputChange"
+                    multiple="1"
+                    hidden="1"
+                />
+            </div>
         </div>
     </div>
 `;
