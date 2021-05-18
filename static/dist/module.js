@@ -139,7 +139,8 @@ define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], func
                 t-on-click="onRemove"
                 t-att-data-index="file_index"></span>
         </div>
-        <label t-att-for="state.controlId" class="btn btn-primary mt-2"
+        <label t-att-for="state.controlId"
+            t-att-class="props.buttonClass ? props.buttonClass : 'btn btn-primary mt-2'"
             t-esc="props.buttonLabel ? props.buttonLabel : 'Add Attachment(s)'" />
         <input
             t-att-id="state.controlId"

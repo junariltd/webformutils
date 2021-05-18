@@ -41,6 +41,7 @@ declare module "jowebutils.forms.Attachments" {
     import { IOWLEnv } from "jowebutils.owl_env";
     export interface IAttachmentsProps {
         buttonLabel: string;
+        buttonClass: string;
         maxAttachments: number;
     }
     export interface IAttachmentsState {
