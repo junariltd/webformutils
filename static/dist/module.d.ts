@@ -102,6 +102,7 @@ declare module "jowebutils.forms.Fields" {
         type: FieldType;
         string?: string;
         placeholder?: string;
+        nolabel?: boolean;
         help?: string;
         invisible?: boolean;
         required?: boolean;
