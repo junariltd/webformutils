@@ -10,32 +10,36 @@ export interface IAttachmentsProps {
 
 export interface IAttachmentsState {
     controlId: string;
-    files: File[];
+    fileNames: string[];
 }
 
 export class Attachments extends Component<IAttachmentsProps, IOWLEnv> {
     state: IAttachmentsState;
+    files: File[];
 
     constructor() {
         super(...arguments);
         this.state = hooks.useState({
             controlId: 'attachments' + Math.floor(Math.random() * 1000),
-            files: []
+            fileNames: []
         });
+        this.files = [];
     }
 
     onFileInputChange(ev: any) {
         const maxAttachments = this.props.maxAttachments || 10;
         if (ev.target && ev.target.files && ev.target.files.length) {
-            if (this.state.files.length + ev.target.files.length > maxAttachments) {
+            if (this.state.fileNames.length + ev.target.files.length > maxAttachments) {
                 // TODO: something better!
                 alert('You may only upload up to ' + maxAttachments + ' files.');
             }
             else {
-                this.state.files.push(...ev.target.files);
+                const fileNames = Array.from(ev.target.files).map((f: any) => f.name);
+                this.state.fileNames.push(...fileNames);
+                this.files.push(...ev.target.files);
                 ev.target.value = '';
                 this.trigger('files-changed', {
-                    files: this.state.files
+                    files: this.files
                 });        
             }
         }
@@ -44,9 +48,10 @@ export class Attachments extends Component<IAttachmentsProps, IOWLEnv> {
     onRemove(ev: any) {
         const index = ev.target.dataset['index']
         if (index) {
-            this.state.files.splice(index, 1);
+            this.state.fileNames.splice(index, 1);
+            this.files.splice(index, 1);
             this.trigger('files-changed', {
-                files: this.state.files
+                files: this.files
             });
         }
     }
@@ -56,7 +61,7 @@ Attachments.components = { }
 Attachments.template = tags.xml /* xml */ `
     <div>
         <div class="joweb-attachments-file"
-            t-foreach="state.files" t-as="file" t-key="file_index">
+            t-foreach="files" t-as="file" t-key="file_index">
             <t t-esc="file.name" />
             <span class="fa fa-trash-o joweb-attachments-del-btn"
                 title="Remove File"
