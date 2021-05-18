@@ -100,7 +100,8 @@ declare module "jowebutils.forms.Fields" {
     export interface IFieldMeta {
         name: string;
         type: FieldType;
-        string: string;
+        string?: string;
+        nolabel?: boolean;
         placeholder?: string;
         help?: string;
         invisible?: boolean;

@@ -39,7 +39,9 @@ export class FormTester extends Component<{}, IOWLEnv> {
                 ],
                 layout: [
                     { name: 'labelPosition', type: 'selection', string: 'Field Label Position',
-                        selection: [['left', 'Left'],['above', 'Above']]},
+                        selection: [
+                            ['left', 'Left'],['above', 'Above'],['none', 'No Label']
+                        ]},
                     { name: 'mode', type: 'selection', string: 'Form Mode',
                         selection: [['view', 'View Mode'],['edit', 'Edit Mode']]},
                 ]

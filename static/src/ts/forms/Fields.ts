@@ -13,7 +13,7 @@ export type SelectionOption = [string, string];
 export interface IFieldMeta {
     name: string;
     type: FieldType;
-    string: string;
+    string?: string;
     placeholder?: string;
     help?: string;
     invisible?: boolean;
@@ -240,26 +240,35 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
 }
 
 class FieldWrapper extends Component {
-    groupClassLeft = 'form-group joweb-field row';
-    groupClassAbove = 'form-group joweb-field';
-    labelClassLeft = 'col-sm-3 col-form-label'
-    labelClassAbove = ''
-    inputClassLeft = 'col-sm-9'
-    inputClassAbove = ''
+    groupClass = {
+        left: 'form-group joweb-field row',
+        above: 'form-group joweb-field',
+        none: 'form-group joweb-field'
+    };
+    labelClass = {
+        left: 'col-sm-3 col-form-label',
+        above: '',
+        none: 'd-none'
+    }
+    inputClass = {
+        left: 'col-sm-9',
+        above: '',
+        none: '',
+    }
 }
 FieldWrapper.template = tags.xml /* xml */ `
-    <div t-att-class="(props.labelPosition == 'above' ? groupClassAbove : groupClassLeft)
+    <div t-att-class="groupClass[props.labelPosition || 'left']
             + (props.field.invisible ? ' d-none' : '')
             + (props.field.required ? ' joweb-field-required' : '')">
         <label t-if="!props.field.invisible"
             t-att-for="props.field.name"
-            t-att-class="(props.labelPosition == 'above' ? labelClassAbove : labelClassLeft)"
+            t-att-class="labelClass[props.labelPosition || 'left']"
             t-att-data-toggle="props.field.tooltip ? 'tooltip' : ''"
             t-att-data-placement="props.field.tooltip ? 'top' : ''"
             t-att-title="props.field.tooltip">
             <t t-esc="props.field.string"/>
         </label>
-        <div t-att-class="(props.labelPosition == 'above' ? inputClassAbove : inputClassLeft)">
+        <div t-att-class="inputClass[props.labelPosition || 'left']">
             <t t-slot="default"/>
             <small t-if="props.field.help" id="passwordHelpBlock" class="form-text text-muted">
                 <t t-esc="props.field.help" />

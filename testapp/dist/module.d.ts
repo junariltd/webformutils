@@ -28,7 +28,8 @@ declare module "jowebutils.forms.Fields" {
     export interface IFieldMeta {
         name: string;
         type: FieldType;
-        string: string;
+        string?: string;
+        nolabel?: boolean;
         placeholder?: string;
         help?: string;
         invisible?: boolean;
@@ -126,13 +127,16 @@ declare module "jowebutils.forms.Attachments" {
     import { IOWLEnv } from "jowebutils.owl_env";
     export interface IAttachmentsProps {
         buttonLabel: string;
+        buttonClass: string;
+        maxAttachments: number;
     }
     export interface IAttachmentsState {
         controlId: string;
-        files: File[];
+        fileNames: string[];
     }
     export class Attachments extends Component<IAttachmentsProps, IOWLEnv> {
         state: IAttachmentsState;
+        files: File[];
         constructor();
         onFileInputChange(ev: any): void;
         onRemove(ev: any): void;
