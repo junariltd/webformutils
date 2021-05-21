@@ -2,7 +2,7 @@
 
 import { Component, tags, hooks } from '@odoo/owl';
 import { IOWLEnv } from '../owl_env';
-import { IFormContext } from './Form';
+import { IFormContext, IFormFile } from './Form';
 
 export type FieldType = 'char' | 'text' | 'date' | 'datetime' |
     'float' | 'integer' | 'boolean' | 'binary' |
@@ -84,21 +84,17 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
             this.setValue(input.value || null);
         }  
         else if(this.props.field.type == 'binary'){ 
-            if(input.files && input.files.length){
-                
+            if(input.files && input.files.length){                
                 const file = input.files[0]
-                const encoded = await this.toBase64(file)
-
-                this.form.setValues({ 
-                    [this.props.field.name]: file.name,
-                    [this.props.field.name + '_data']: encoded,
-                })
+                const fileValue: IFormFile = {
+                    file_name: file.name,
+                }
+                this.form.setValues({ [this.props.field.name]: fileValue })
+                this.form.setFiles({ [this.props.field.name]: file })
             }
             else{
-                this.form.setValues({ 
-                    [this.props.field.name]: null,
-                    [this.props.field.name + '_data']: null,
-                })
+                this.form.setValues({ [this.props.field.name]: null })
+                this.form.setFiles({ [this.props.field.name]: null })
             }
         }
         else if (this.props.field.type == 'multiselect' || this.props.field.type == 'many2many') {
@@ -117,6 +113,10 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
 
     setValue(value: any) {
         this.form.setValues({ [this.props.field.name]: value });
+    }
+
+    setNullValue() {
+        this.form.setValues({ [this.props.field.name]: null });
     }
 
     multiIsSelected(value: any) {
@@ -435,15 +435,32 @@ export class BinaryField extends BaseField {}
 BinaryField.components = { FieldWrapper }
 BinaryField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
-        <input
-            type="file"
-            class="form-control-file"
-            t-att-name="props.field.name"
-            t-att-required="props.field.required"
-            t-on-change="onChange"
-            t-att-placeholder="props.field.placeholder"
-            t-att-disabled="props.field.readonly"
-        />
+        <t t-if="rawValue &amp;&amp; typeof rawValue == 'object' &amp;&amp; rawValue.file_name">
+            <div class="card">
+                <div class="card-body p-2" style="background-color: #e9ecef !important;">
+                    <a t-if="rawValue.url"
+                        t-att-href="rawValue.url" style="color: black;" target="_blank"><t t-esc="rawValue.file_name" /></a>
+                    <span t-if="!rawValue.url"
+                        ><t t-esc="rawValue.file_name" /></span>
+                    <div t-if="!props.field.readonly" style="position: absolute; top: 0; right: 0; font-size: 1.3rem;">
+                        <span class="fa fa-trash-o joweb-attachments-del-btn"
+                            title="Remove File"
+                            t-on-click="setNullValue" />
+                    </div>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <input
+                type="file"
+                class="form-control-file"
+                t-att-name="props.field.name"
+                t-att-required="props.field.required"
+                t-on-change="onChange"
+                t-att-placeholder="props.field.placeholder"
+                t-att-disabled="props.field.readonly"
+            />
+        </t>
     </FieldWrapper>
 `
 export class FormField extends Component<IFieldProps, IOWLEnv>{}

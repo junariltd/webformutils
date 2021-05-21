@@ -174,11 +174,13 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
         constructor() {
             super(...arguments);
             const setValues = this.setValues.bind(this);
+            const setFiles = this.setFiles.bind(this);
             const registerField = this.registerField.bind(this);
             const formContextData = {
                 values: this.props.initialValues || {},
                 registerField,
-                setValues
+                setValues,
+                setFiles
             };
             this.name = this.props.name || 'form';
             if (!this.env.formContext) {
@@ -191,6 +193,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             this.env.formContext[this.name] = formContextContainer;
             this.formContext = formContextContainer.state;
             this.fields = {};
+            this.files = {};
         }
         willUnmount() {
             // Remove form context
@@ -203,10 +206,14 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             Object.assign(this.formContext.values, values);
             this.valuesChanged(Object.keys(values));
         }
+        setFiles(values) {
+            Object.assign(this.files, values);
+        }
         valuesChanged(fieldsChanged) {
             this.trigger('values-changed', {
                 fieldsChanged,
-                values: this.formContext.values
+                values: this.formContext.values,
+                files: this.files
             });
         }
         onSubmit(ev) {
@@ -221,7 +228,8 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
                 }
             }
             this.trigger('submitted', {
-                values, editableValues
+                values, editableValues,
+                files: this.files
             });
         }
     }
@@ -279,17 +287,15 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             else if (this.props.field.type == 'binary') {
                 if (input.files && input.files.length) {
                     const file = input.files[0];
-                    const encoded = await this.toBase64(file);
-                    this.form.setValues({
-                        [this.props.field.name]: file.name,
-                        [this.props.field.name + '_data']: encoded,
-                    });
+                    const fileValue = {
+                        file_name: file.name,
+                    };
+                    this.form.setValues({ [this.props.field.name]: fileValue });
+                    this.form.setFiles({ [this.props.field.name]: file });
                 }
                 else {
-                    this.form.setValues({
-                        [this.props.field.name]: null,
-                        [this.props.field.name + '_data']: null,
-                    });
+                    this.form.setValues({ [this.props.field.name]: null });
+                    this.form.setFiles({ [this.props.field.name]: null });
                 }
             }
             else if (this.props.field.type == 'multiselect' || this.props.field.type == 'many2many') {
@@ -307,6 +313,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         }
         setValue(value) {
             this.form.setValues({ [this.props.field.name]: value });
+        }
+        setNullValue() {
+            this.form.setValues({ [this.props.field.name]: null });
         }
         multiIsSelected(value) {
             const selectedValues = this.rawValue || [];
@@ -580,15 +589,32 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     BinaryField.components = { FieldWrapper };
     BinaryField.template = owl_4.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
-        <input
-            type="file"
-            class="form-control-file"
-            t-att-name="props.field.name"
-            t-att-required="props.field.required"
-            t-on-change="onChange"
-            t-att-placeholder="props.field.placeholder"
-            t-att-disabled="props.field.readonly"
-        />
+        <t t-if="rawValue &amp;&amp; typeof rawValue == 'object' &amp;&amp; rawValue.file_name">
+            <div class="card">
+                <div class="card-body p-2" style="background-color: #e9ecef !important;">
+                    <a t-if="rawValue.url"
+                        t-att-href="rawValue.url" style="color: black;" target="_blank"><t t-esc="rawValue.file_name" /></a>
+                    <span t-if="!rawValue.url"
+                        ><t t-esc="rawValue.file_name" /></span>
+                    <div t-if="!props.field.readonly" style="position: absolute; top: 0; right: 0; font-size: 1.3rem;">
+                        <span class="fa fa-trash-o joweb-attachments-del-btn"
+                            title="Remove File"
+                            t-on-click="setNullValue" />
+                    </div>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <input
+                type="file"
+                class="form-control-file"
+                t-att-name="props.field.name"
+                t-att-required="props.field.required"
+                t-on-change="onChange"
+                t-att-placeholder="props.field.placeholder"
+                t-att-disabled="props.field.readonly"
+            />
+        </t>
     </FieldWrapper>
 `;
     class FormField extends owl_4.Component {
@@ -671,6 +697,24 @@ define("jowebutils.forms.TagFieldInput", ["require", "exports", "@odoo/owl"], fu
         }
     }
     exports.TagInputField = TagInputField;
+});
+///<amd-module name='jowebutils.forms.utils'/>
+define("jowebutils.forms.utils", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.fileToBase64 = void 0;
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const res = reader.result;
+                resolve(res.split(";base64,")[1]);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+    exports.fileToBase64 = fileToBase64;
 });
 ///<amd-module name='jowebutils.widgets.NavBar'/>
 define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], function (require, exports, owl_6) {

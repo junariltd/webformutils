@@ -64,13 +64,23 @@ declare module "jowebutils.forms.Form" {
     export interface IValues {
         [fieldName: string]: any;
     }
+    export interface IFileValues {
+        [fieldName: string]: File | null;
+    }
     export interface IFormContext {
         values: IValues;
         setValues(values: IValues): void;
+        setFiles(values: IFileValues): void;
         registerField(name: string, component: IFieldComponent): void;
     }
     export interface OwlEvent extends Event {
         detail: any;
+    }
+    export interface IFormFile {
+        file_name: string;
+        url?: string;
+        file?: File;
+        attachment_id?: number;
     }
     export interface IFormProps {
         name?: string;
@@ -82,10 +92,14 @@ declare module "jowebutils.forms.Form" {
         fields: {
             [name: string]: IFieldComponent;
         };
+        files: {
+            [fieldName: string]: File;
+        };
         constructor();
         willUnmount(): void;
         registerField(name: string, component: IFieldComponent): void;
         setValues(values: IValues): void;
+        setFiles(values: IFileValues): void;
         valuesChanged(fieldsChanged: string[]): void;
         onSubmit(ev: Event): void;
     }
@@ -128,6 +142,7 @@ declare module "jowebutils.forms.Fields" {
         toBase64(file: File): Promise<unknown>;
         onChange(ev: Event): Promise<void>;
         setValue(value: any): void;
+        setNullValue(): void;
         multiIsSelected(value: any): boolean;
         multiSelectValue(value: any): void;
         multiDeselectValue(value: any): void;
@@ -176,6 +191,10 @@ declare module "jowebutils.forms.TagFieldInput" {
         onChange(ev: Event): void;
         setValue(value: any): void;
     }
+}
+/// <amd-module name="jowebutils.forms.utils" />
+declare module "jowebutils.forms.utils" {
+    export function fileToBase64(file: File): Promise<string>;
 }
 /// <amd-module name="jowebutils.widgets.NavBar" />
 declare module "jowebutils.widgets.NavBar" {

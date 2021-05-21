@@ -5,15 +5,24 @@ import { IOWLEnv } from '../owl_env';
 import { IFieldComponent } from './Fields';
 
 export interface IValues { [fieldName: string]: any; }
+export interface IFileValues { [fieldName: string]: File | null; }
 
 export interface IFormContext {
     values: IValues;
     setValues(values: IValues): void;
+    setFiles(values: IFileValues): void;
     registerField(name: string, component: IFieldComponent): void;
 }
 
 export interface OwlEvent extends Event {
     detail: any;
+}
+
+export interface IFormFile {
+    file_name: string;
+    url?: string;
+    file?: File;  // will only be used when setting initial form data. Should NOT be stored in state.
+    attachment_id?: number;
 }
 
 export interface IFormProps {
@@ -26,16 +35,22 @@ export class Form extends Component<IFormProps, IOWLEnv> {
     formContext: IFormContext;
     fields: { [name: string]: IFieldComponent };
 
+    // We store file data in a POJO because various
+    // browser file functions don't like proxies
+    files: { [fieldName: string]: File }
+
     constructor() {
         super(...arguments);
 
         const setValues = this.setValues.bind(this);
+        const setFiles = this.setFiles.bind(this);
         const registerField = this.registerField.bind(this);
 
         const formContextData = {
             values: this.props.initialValues || {},
             registerField,
-            setValues
+            setValues,
+            setFiles
         };
 
         this.name = this.props.name || 'form';
@@ -50,6 +65,7 @@ export class Form extends Component<IFormProps, IOWLEnv> {
         this.env.formContext[this.name] = formContextContainer;
         this.formContext = formContextContainer.state;
         this.fields = {};
+        this.files = {};
     }
 
     willUnmount() {
@@ -66,10 +82,15 @@ export class Form extends Component<IFormProps, IOWLEnv> {
         this.valuesChanged(Object.keys(values));
     }
 
+    setFiles(values: IFileValues) {
+        Object.assign(this.files, values);
+    }
+
     valuesChanged(fieldsChanged: string[]) {
         this.trigger('values-changed', {
             fieldsChanged,
-            values: this.formContext.values
+            values: this.formContext.values,
+            files: this.files
         });
     }
 
@@ -85,7 +106,8 @@ export class Form extends Component<IFormProps, IOWLEnv> {
             }
         }
         this.trigger('submitted', {
-            values, editableValues
+            values, editableValues,
+            files: this.files
         });
     }
 
