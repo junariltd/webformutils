@@ -679,7 +679,7 @@ define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], functio
     }
     exports.NavBar = NavBar;
     NavBar.template = owl_6.tags.xml /* xml */ `
-    <nav t-attf-class="navbar navbar-light navbar-expand-lg border py-0 mb-2 o_portal_navbar mt-3 rounded">
+    <nav t-attf-class="navbar jowebutils_navbar navbar-light navbar-expand-lg border py-0 mb-2 o_portal_navbar mt-3 rounded">
         <ol class="o_portal_submenu breadcrumb mb-0 py-2 flex-grow-1">
             <li class="breadcrumb-item"><a href="/my/home" aria-label="Home" title="Home"><i class="fa fa-home"/></a></li>
             <t t-foreach="props.breadcrumbs" t-as="item" t-key="item_index">

@@ -12,6 +12,10 @@
     border-radius: 0 0 10px 10px;
 }
 
+.navbar.jowebutils_navbar {
+    background-image: none !important;
+}
+
 .o_portal_wrap .o_portal_my_doc_table.jowebutils-table td {
     white-space: normal;
     vertical-align: top;
