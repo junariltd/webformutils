@@ -79,6 +79,10 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
                 this.setValue(null);
             }
         }  
+        else if (this.props.field.type == 'date' || this.props.field.type == 'datetime') {
+            // Make sure empty string is treated as null
+            this.setValue(input.value || null);
+        }  
         else if(this.props.field.type == 'binary'){ 
             if(input.files && input.files.length){
                 
