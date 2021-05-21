@@ -70,6 +70,15 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
         if (this.props.field.type == 'boolean') {
             this.setValue(input.checked == true);
         }  
+        else if (this.props.field.type == 'many2one') {
+            const value = input.value;
+            if (value) {
+                this.setValue(Number(value));
+            }
+            else {
+                this.setValue(null);
+            }
+        }  
         else if(this.props.field.type == 'binary'){ 
             if(input.files && input.files.length){
                 
@@ -142,11 +151,6 @@ export class BaseField extends Component<IFieldProps, IOWLEnv> implements IField
     getFieldMeta() {
         return this.props.field;
     }
-
-    // setMode(mode: string) {
-    //     this.state.mode = mode;
-    //     this.renderElement();
-    // }
 
     get rawValue() {
         return this.form.values[this.props.field.name];
