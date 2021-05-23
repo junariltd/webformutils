@@ -32,6 +32,7 @@
 .joweb-field .grow-wrap>textarea {
     resize: none;
     overflow: hidden;
+    min-height: 0;
 }
 
 .joweb-field .grow-wrap>textarea,
