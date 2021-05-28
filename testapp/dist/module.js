@@ -34,20 +34,31 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             if (this.props.field.type == 'boolean') {
                 this.setValue(input.checked == true);
             }
+            else if (this.props.field.type == 'many2one') {
+                const value = input.value;
+                if (value) {
+                    this.setValue(Number(value));
+                }
+                else {
+                    this.setValue(null);
+                }
+            }
+            else if (this.props.field.type == 'date' || this.props.field.type == 'datetime') {
+                // Make sure empty string is treated as null
+                this.setValue(input.value || null);
+            }
             else if (this.props.field.type == 'binary') {
                 if (input.files && input.files.length) {
                     const file = input.files[0];
-                    const encoded = await this.toBase64(file);
-                    this.form.setValues({
-                        [this.props.field.name]: file.name,
-                        [this.props.field.name + '_data']: encoded,
-                    });
+                    const fileValue = {
+                        file_name: file.name,
+                    };
+                    this.form.setValues({ [this.props.field.name]: fileValue });
+                    this.form.setFiles({ [this.props.field.name]: file });
                 }
                 else {
-                    this.form.setValues({
-                        [this.props.field.name]: null,
-                        [this.props.field.name + '_data']: null,
-                    });
+                    this.form.setValues({ [this.props.field.name]: null });
+                    this.form.setFiles({ [this.props.field.name]: null });
                 }
             }
             else if (this.props.field.type == 'multiselect' || this.props.field.type == 'many2many') {
@@ -65,6 +76,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         }
         setValue(value) {
             this.form.setValues({ [this.props.field.name]: value });
+        }
+        setNullValue() {
+            this.form.setValues({ [this.props.field.name]: null });
         }
         multiIsSelected(value) {
             const selectedValues = this.rawValue || [];
@@ -98,10 +112,6 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         getFieldMeta() {
             return this.props.field;
         }
-        // setMode(mode: string) {
-        //     this.state.mode = mode;
-        //     this.renderElement();
-        // }
         get rawValue() {
             return this.form.values[this.props.field.name];
         }
@@ -180,6 +190,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     CharField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="text"
             class="form-control"
             t-att-name="props.field.name"
@@ -189,6 +200,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class NumberField extends BaseField {
@@ -198,6 +214,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     NumberField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="number"
             class="form-control"
             t-att-name="props.field.name"
@@ -207,6 +224,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class DateField extends BaseField {
@@ -216,6 +238,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     DateField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="date"
             class="form-control"
             t-att-name="props.field.name"
@@ -225,6 +248,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class DateTimeField extends BaseField {
@@ -234,6 +262,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     DateTimeField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="datetime-local"
             class="form-control"
             t-att-name="props.field.name"
@@ -243,6 +272,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class TextField extends BaseField {
@@ -251,7 +285,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     TextField.components = { FieldWrapper };
     TextField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
-        <div class="grow-wrap">
+        <div t-if="form.mode == 'edit'" class="grow-wrap">
             <textarea
                 class="form-control"
                 t-att-name="props.field.name"
@@ -264,6 +298,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 rows="5"
             />
         </div>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class BooleanField extends BaseField {
@@ -274,6 +313,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     <FieldWrapper t-props="props">
         <label class="joweb-check">
             <input
+                t-if="form.mode == 'edit'"
                 type="checkbox"
                 t-att-name="props.field.name"
                 t-att-required="props.field.required"
@@ -283,6 +323,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 t-att-disabled="props.field.readonly"
             />
         </label>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class SelectField extends BaseField {
@@ -292,6 +337,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     SelectField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <select
+            t-if="form.mode == 'edit'"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
@@ -309,6 +355,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class MultiSelectField extends BaseField {
@@ -342,15 +393,32 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     BinaryField.components = { FieldWrapper };
     BinaryField.template = owl_1.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
-        <input
-            type="file"
-            class="form-control-file"
-            t-att-name="props.field.name"
-            t-att-required="props.field.required"
-            t-on-change="onChange"
-            t-att-placeholder="props.field.placeholder"
-            t-att-disabled="props.field.readonly"
-        />
+        <t t-if="rawValue &amp;&amp; typeof rawValue == 'object' &amp;&amp; rawValue.file_name">
+            <div class="card">
+                <div class="card-body p-2" style="background-color: #e9ecef !important;">
+                    <a t-if="rawValue.url"
+                        t-att-href="rawValue.url" style="color: black;" target="_blank"><t t-esc="rawValue.file_name" /></a>
+                    <span t-if="!rawValue.url"
+                        ><t t-esc="rawValue.file_name" /></span>
+                    <div t-if="!props.field.readonly" style="position: absolute; top: 0; right: 0; font-size: 1.3rem;">
+                        <span class="fa fa-trash-o joweb-attachments-del-btn"
+                            title="Remove File"
+                            t-on-click="setNullValue" />
+                    </div>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <input
+                type="file"
+                class="form-control-file"
+                t-att-name="props.field.name"
+                t-att-required="props.field.required"
+                t-on-change="onChange"
+                t-att-placeholder="props.field.placeholder"
+                t-att-disabled="props.field.readonly"
+            />
+        </t>
     </FieldWrapper>
 `;
     class FormField extends owl_1.Component {
@@ -402,11 +470,14 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
         constructor() {
             super(...arguments);
             const setValues = this.setValues.bind(this);
+            const setFiles = this.setFiles.bind(this);
             const registerField = this.registerField.bind(this);
             const formContextData = {
+                mode: this.props.mode || 'edit',
                 values: this.props.initialValues || {},
                 registerField,
-                setValues
+                setValues,
+                setFiles
             };
             this.name = this.props.name || 'form';
             if (!this.env.formContext) {
@@ -419,6 +490,10 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             this.env.formContext[this.name] = formContextContainer;
             this.formContext = formContextContainer.state;
             this.fields = {};
+            this.files = {};
+        }
+        async willUpdateProps(nextProps) {
+            this.formContext.mode = nextProps.mode || 'edit';
         }
         willUnmount() {
             // Remove form context
@@ -431,10 +506,14 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             Object.assign(this.formContext.values, values);
             this.valuesChanged(Object.keys(values));
         }
+        setFiles(values) {
+            Object.assign(this.files, values);
+        }
         valuesChanged(fieldsChanged) {
             this.trigger('values-changed', {
                 fieldsChanged,
-                values: this.formContext.values
+                values: this.formContext.values,
+                files: this.files
             });
         }
         onSubmit(ev) {
@@ -449,7 +528,8 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
                 }
             }
             this.trigger('submitted', {
-                values, editableValues
+                values, editableValues,
+                files: this.files
             });
         }
     }
@@ -507,25 +587,37 @@ define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], func
     Attachments.components = {};
     Attachments.template = owl_3.tags.xml /* xml */ `
     <div>
-        <div class="joweb-attachments-file"
-            t-foreach="files" t-as="file" t-key="file_index">
-            <t t-esc="file.name" />
-            <span class="fa fa-trash-o joweb-attachments-del-btn"
-                title="Remove File"
-                t-on-click="onRemove"
-                t-att-data-index="file_index"></span>
+        <div class="row">
+            <div class="joweb-attachments-file col-6 mb-4"
+                t-foreach="files" t-as="file" t-key="file_index">
+                <div class="card" style=" background-color: #EEEEEE !important;">
+                    <div class="card-body" style="background-color: #EEEEEE !important;">
+                        <t t-esc="file.name" />
+                        <div style="position: absolute; top: 0; right: 0; color: #dc3545; font-size: 1.5rem;">
+                            <span class="fa fa-trash-o joweb-attachments-del-btn"
+                                title="Remove File"
+                                t-on-click="onRemove"
+                                t-att-data-index="file_index"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <label t-att-for="state.controlId"
-            t-att-class="props.buttonClass ? props.buttonClass : 'btn btn-primary mt-2'"
-            t-esc="props.buttonLabel ? props.buttonLabel : 'Add Attachment(s)'" />
-        <input
-            t-att-id="state.controlId"
-            type="file"
-            class="form-control-file"
-            t-on-change="onFileInputChange"
-            multiple="1"
-            hidden="1"
-        />
+        <div class="row">
+            <div class="col-12">
+                <label t-att-for="state.controlId"
+                    t-att-class="props.buttonClass ? props.buttonClass : 'btn btn-primary mt-2'"
+                    t-esc="props.buttonLabel ? props.buttonLabel : 'Add Attachment(s)'" />
+                <input
+                    t-att-id="state.controlId"
+                    type="file"
+                    class="form-control-file"
+                    t-on-change="onFileInputChange"
+                    multiple="1"
+                    hidden="1"
+                />
+            </div>
+        </div>
     </div>
 `;
 });
@@ -586,6 +678,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                     mode: 'edit',
                 },
                 labelPosition: 'left',
+                formMode: 'edit',
                 settings_fields: {
                     attribs: [
                         { name: 'required', type: 'boolean', string: 'Required' },
@@ -623,6 +716,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
             const newSettings = ev.detail.values;
             console.log('settings', newSettings);
             this.state.labelPosition = newSettings.labelPosition;
+            this.state.formMode = newSettings.mode;
             this.state.form_fields.forEach((field) => {
                 field.required = newSettings.required;
                 field.readonly = newSettings.readonly;
@@ -675,7 +769,7 @@ define("jowebutils.testapp.FormTester", ["require", "exports", "@odoo/owl", "jow
                     <div class="card-header">
                         <b>Form Components</b>
                     </div>
-                    <Form t-on-submitted="onSubmitted">
+                    <Form t-on-submitted="onSubmitted" mode="state.formMode">
                         <div class="card-body p-4">
                             <t t-foreach="state.form_fields" t-as="field" t-key="field.name">
                                 <FormField field="field" labelPosition="state.labelPosition" />
@@ -931,6 +1025,24 @@ define("jowebutils.forms.TagFieldInput", ["require", "exports", "@odoo/owl"], fu
     }
     exports.TagInputField = TagInputField;
 });
+///<amd-module name='jowebutils.forms.utils'/>
+define("jowebutils.forms.utils", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.fileToBase64 = void 0;
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const res = reader.result;
+                resolve(res.split(";base64,")[1]);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+    exports.fileToBase64 = fileToBase64;
+});
 ///<amd-module name='jowebutils.widgets.NavBar'/>
 define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], function (require, exports, owl_11) {
     "use strict";
@@ -947,7 +1059,7 @@ define("jowebutils.widgets.NavBar", ["require", "exports", "@odoo/owl"], functio
     }
     exports.NavBar = NavBar;
     NavBar.template = owl_11.tags.xml /* xml */ `
-    <nav t-attf-class="navbar navbar-light navbar-expand-lg border py-0 mb-2 o_portal_navbar mt-3 rounded">
+    <nav t-attf-class="navbar jowebutils_navbar navbar-light navbar-expand-lg border py-0 mb-2 o_portal_navbar mt-3 rounded">
         <ol class="o_portal_submenu breadcrumb mb-0 py-2 flex-grow-1">
             <li class="breadcrumb-item"><a href="/my/home" aria-label="Home" title="Home"><i class="fa fa-home"/></a></li>
             <t t-foreach="props.breadcrumbs" t-as="item" t-key="item_index">

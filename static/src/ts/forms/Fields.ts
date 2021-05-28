@@ -289,6 +289,7 @@ CharField.components = { FieldWrapper }
 CharField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="text"
             class="form-control"
             t-att-name="props.field.name"
@@ -298,6 +299,11 @@ CharField.template = tags.xml /* xml */ `
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `
 export class NumberField extends BaseField {}
@@ -305,6 +311,7 @@ NumberField.components = { FieldWrapper }
 NumberField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="number"
             class="form-control"
             t-att-name="props.field.name"
@@ -314,6 +321,11 @@ NumberField.template = tags.xml /* xml */ `
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `
 export class DateField extends BaseField {}
@@ -321,6 +333,7 @@ DateField.components = { FieldWrapper }
 DateField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="date"
             class="form-control"
             t-att-name="props.field.name"
@@ -330,6 +343,11 @@ DateField.template = tags.xml /* xml */ `
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `
 export class DateTimeField extends BaseField {}
@@ -337,6 +355,7 @@ DateTimeField.components = { FieldWrapper }
 DateTimeField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="datetime-local"
             class="form-control"
             t-att-name="props.field.name"
@@ -346,13 +365,18 @@ DateTimeField.template = tags.xml /* xml */ `
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `
 export class TextField extends BaseField {}
 TextField.components = { FieldWrapper }
 TextField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
-        <div class="grow-wrap">
+        <div t-if="form.mode == 'edit'" class="grow-wrap">
             <textarea
                 class="form-control"
                 t-att-name="props.field.name"
@@ -365,6 +389,11 @@ TextField.template = tags.xml /* xml */ `
                 rows="5"
             />
         </div>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `
 export class BooleanField extends BaseField {}
@@ -373,6 +402,7 @@ BooleanField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <label class="joweb-check">
             <input
+                t-if="form.mode == 'edit'"
                 type="checkbox"
                 t-att-name="props.field.name"
                 t-att-required="props.field.required"
@@ -382,6 +412,11 @@ BooleanField.template = tags.xml /* xml */ `
                 t-att-disabled="props.field.readonly"
             />
         </label>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `
 export class SelectField extends BaseField {}
@@ -389,6 +424,7 @@ SelectField.components = { FieldWrapper }
 SelectField.template = tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <select
+            t-if="form.mode == 'edit'"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
@@ -406,6 +442,11 @@ SelectField.template = tags.xml /* xml */ `
                 ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `
 export class MultiSelectField extends BaseField {}

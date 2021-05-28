@@ -6,8 +6,10 @@ import { IFieldComponent } from './Fields';
 
 export interface IValues { [fieldName: string]: any; }
 export interface IFileValues { [fieldName: string]: File | null; }
+export type IFormMode = 'edit' | 'view';
 
 export interface IFormContext {
+    mode: IFormMode;
     values: IValues;
     setValues(values: IValues): void;
     setFiles(values: IFileValues): void;
@@ -27,7 +29,8 @@ export interface IFormFile {
 
 export interface IFormProps {
     name?: string;
-    initialValues: IValues;
+    mode?: IFormMode;
+    initialValues?: IValues;
 }
 
 export class Form extends Component<IFormProps, IOWLEnv> {
@@ -46,7 +49,8 @@ export class Form extends Component<IFormProps, IOWLEnv> {
         const setFiles = this.setFiles.bind(this);
         const registerField = this.registerField.bind(this);
 
-        const formContextData = {
+        const formContextData: IFormContext = {
+            mode: this.props.mode || 'edit',
             values: this.props.initialValues || {},
             registerField,
             setValues,
@@ -66,6 +70,10 @@ export class Form extends Component<IFormProps, IOWLEnv> {
         this.formContext = formContextContainer.state;
         this.fields = {};
         this.files = {};
+    }
+
+    async willUpdateProps(nextProps: IFormProps) {
+        this.formContext.mode = nextProps.mode || 'edit';
     }
 
     willUnmount() {

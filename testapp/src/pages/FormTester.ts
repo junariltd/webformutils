@@ -3,7 +3,7 @@
 
 import { Component, tags, hooks } from '@odoo/owl';
 import { IOWLEnv } from '@jowebutils/owl_env';
-import { Form, OwlEvent } from '@jowebutils/forms/Form';
+import { Form, IFormMode, OwlEvent } from '@jowebutils/forms/Form';
 import { FormField, IFieldMeta } from '@jowebutils/forms/Fields';
 import { Attachments } from '@jowebutils/forms/Attachments'
 import { Tabs } from '@jowebutils/widgets/Tabs';
@@ -11,6 +11,7 @@ import { Tabs } from '@jowebutils/widgets/Tabs';
 export interface IFormTesterState {
     initial_settings: { [setting: string]: any };
     labelPosition: string;
+    formMode: IFormMode;
     settings_fields: { [type: string]: IFieldMeta[] };
     form_fields: IFieldMeta[];
     output: null | string;
@@ -30,6 +31,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
                 mode: 'edit',
             },
             labelPosition: 'left',
+            formMode: 'edit',
             settings_fields: {
                 attribs: [
                     { name: 'required', type: 'boolean', string: 'Required' },
@@ -68,6 +70,7 @@ export class FormTester extends Component<{}, IOWLEnv> {
         const newSettings = ev.detail.values;
         console.log('settings', newSettings);
         this.state.labelPosition = newSettings.labelPosition;
+        this.state.formMode = newSettings.mode;
         this.state.form_fields.forEach((field) => {
             field.required = newSettings.required;
             field.readonly = newSettings.readonly;
@@ -120,7 +123,7 @@ FormTester.template = tags.xml /* xml */ `
                     <div class="card-header">
                         <b>Form Components</b>
                     </div>
-                    <Form t-on-submitted="onSubmitted">
+                    <Form t-on-submitted="onSubmitted" mode="state.formMode">
                         <div class="card-body p-4">
                             <t t-foreach="state.form_fields" t-as="field" t-key="field.name">
                                 <FormField field="field" labelPosition="state.labelPosition" />

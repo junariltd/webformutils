@@ -67,7 +67,9 @@ declare module "jowebutils.forms.Form" {
     export interface IFileValues {
         [fieldName: string]: File | null;
     }
+    export type IFormMode = 'edit' | 'view';
     export interface IFormContext {
+        mode: IFormMode;
         values: IValues;
         setValues(values: IValues): void;
         setFiles(values: IFileValues): void;
@@ -84,7 +86,8 @@ declare module "jowebutils.forms.Form" {
     }
     export interface IFormProps {
         name?: string;
-        initialValues: IValues;
+        mode?: IFormMode;
+        initialValues?: IValues;
     }
     export class Form extends Component<IFormProps, IOWLEnv> {
         name: string;
@@ -96,6 +99,7 @@ declare module "jowebutils.forms.Form" {
             [fieldName: string]: File;
         };
         constructor();
+        willUpdateProps(nextProps: IFormProps): Promise<void>;
         willUnmount(): void;
         registerField(name: string, component: IFieldComponent): void;
         setValues(values: IValues): void;

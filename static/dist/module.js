@@ -177,6 +177,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             const setFiles = this.setFiles.bind(this);
             const registerField = this.registerField.bind(this);
             const formContextData = {
+                mode: this.props.mode || 'edit',
                 values: this.props.initialValues || {},
                 registerField,
                 setValues,
@@ -194,6 +195,9 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
             this.formContext = formContextContainer.state;
             this.fields = {};
             this.files = {};
+        }
+        async willUpdateProps(nextProps) {
+            this.formContext.mode = nextProps.mode || 'edit';
         }
         willUnmount() {
             // Remove form context
@@ -427,6 +431,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     CharField.template = owl_4.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="text"
             class="form-control"
             t-att-name="props.field.name"
@@ -436,6 +441,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class NumberField extends BaseField {
@@ -445,6 +455,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     NumberField.template = owl_4.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="number"
             class="form-control"
             t-att-name="props.field.name"
@@ -454,6 +465,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class DateField extends BaseField {
@@ -463,6 +479,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     DateField.template = owl_4.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="date"
             class="form-control"
             t-att-name="props.field.name"
@@ -472,6 +489,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class DateTimeField extends BaseField {
@@ -481,6 +503,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     DateTimeField.template = owl_4.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <input
+            t-if="form.mode == 'edit'"
             type="datetime-local"
             class="form-control"
             t-att-name="props.field.name"
@@ -490,6 +513,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         />
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class TextField extends BaseField {
@@ -498,7 +526,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     TextField.components = { FieldWrapper };
     TextField.template = owl_4.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
-        <div class="grow-wrap">
+        <div t-if="form.mode == 'edit'" class="grow-wrap">
             <textarea
                 class="form-control"
                 t-att-name="props.field.name"
@@ -511,6 +539,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 rows="5"
             />
         </div>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class BooleanField extends BaseField {
@@ -521,6 +554,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     <FieldWrapper t-props="props">
         <label class="joweb-check">
             <input
+                t-if="form.mode == 'edit'"
                 type="checkbox"
                 t-att-name="props.field.name"
                 t-att-required="props.field.required"
@@ -530,6 +564,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 t-att-disabled="props.field.readonly"
             />
         </label>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class SelectField extends BaseField {
@@ -539,6 +578,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     SelectField.template = owl_4.tags.xml /* xml */ `
     <FieldWrapper t-props="props">
         <select
+            t-if="form.mode == 'edit'"
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
@@ -556,6 +596,11 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
                 ><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext">
+            <t t-esc="formattedValue" />
+        </div>
     </FieldWrapper>
 `;
     class MultiSelectField extends BaseField {
