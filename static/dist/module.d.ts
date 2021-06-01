@@ -113,7 +113,7 @@ declare module "jowebutils.forms.Fields" {
     import { Component } from '@odoo/owl';
     import { IOWLEnv } from "jowebutils.owl_env";
     import { IFormContext } from "jowebutils.forms.Form";
-    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'binary' | 'selection' | 'multiselect' | 'many2one' | 'many2many';
+    export type FieldType = 'char' | 'text' | 'date' | 'datetime' | 'float' | 'integer' | 'boolean' | 'binary' | 'html' | 'selection' | 'multiselect' | 'many2one' | 'many2many';
     export type SelectionOption = [string, string];
     export interface IFieldMeta {
         name: string;
@@ -165,6 +165,8 @@ declare module "jowebutils.forms.Fields" {
     export class DateTimeField extends BaseField {
     }
     export class TextField extends BaseField {
+    }
+    export class HtmlField extends BaseField {
     }
     export class BooleanField extends BaseField {
     }

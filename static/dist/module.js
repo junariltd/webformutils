@@ -248,7 +248,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
 define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function (require, exports, owl_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FormField = exports.BinaryField = exports.MultiSelectField = exports.SelectField = exports.BooleanField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
+    exports.FormField = exports.BinaryField = exports.MultiSelectField = exports.SelectField = exports.BooleanField = exports.HtmlField = exports.TextField = exports.DateTimeField = exports.DateField = exports.NumberField = exports.CharField = exports.BaseField = void 0;
     class BaseField extends owl_4.Component {
         constructor() {
             super(...arguments);
@@ -410,13 +410,13 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             + (props.field.required ? ' joweb-field-required' : '')">
         <label t-if="!props.field.invisible"
             t-att-for="props.field.name"
-            t-att-class="labelClass[props.labelPosition || 'left']"
+            t-att-class="props.labelClass || labelClass[props.labelPosition || 'left']"
             t-att-data-toggle="props.field.tooltip ? 'tooltip' : ''"
             t-att-data-placement="props.field.tooltip ? 'top' : ''"
             t-att-title="props.field.tooltip">
             <t t-esc="props.field.string"/>
         </label>
-        <div t-att-class="inputClass[props.labelPosition || 'left']">
+        <div t-att-class="props.inputClass || inputClass[props.labelPosition || 'left']">
             <t t-slot="default"/>
             <small t-if="props.field.help" id="passwordHelpBlock" class="form-text text-muted">
                 <t t-esc="props.field.help" />
@@ -546,6 +546,32 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
         </div>
     </FieldWrapper>
 `;
+    class HtmlField extends BaseField {
+    }
+    exports.HtmlField = HtmlField;
+    HtmlField.components = { FieldWrapper };
+    HtmlField.template = owl_4.tags.xml /* xml */ `
+    <FieldWrapper t-props="props">
+        <div t-if="form.mode == 'edit'" class="grow-wrap">
+            <textarea
+                class="form-control"
+                t-att-name="props.field.name"
+                t-att-required="props.field.required"
+                t-att-value="rawValue"
+                t-on-change="onChange"
+                t-att-placeholder="props.field.placeholder"
+                t-att-disabled="props.field.readonly"
+                onInput="this.parentNode.dataset.replicatedValue = this.value"
+                rows="5"
+            />
+        </div>
+        <div
+            t-if="form.mode == 'view'"
+            class="form-control-plaintext joweb-html-field-content">
+            <t t-raw="rawValue" />
+        </div>
+    </FieldWrapper>
+`;
     class BooleanField extends BaseField {
     }
     exports.BooleanField = BooleanField;
@@ -665,7 +691,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
     class FormField extends owl_4.Component {
     }
     exports.FormField = FormField;
-    FormField.components = { CharField, TextField, NumberField, BooleanField,
+    FormField.components = { CharField, TextField, HtmlField, NumberField, BooleanField,
         DateField, DateTimeField, SelectField, MultiSelectField, BinaryField };
     FormField.template = owl_4.tags.xml /* xml */ `
     <div>
@@ -676,7 +702,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             <TextField t-props="props" />
         </t>
         <t t-if="props.field.type == 'html'">
-            <TextField t-props="props" />
+            <HtmlField t-props="props" />
         </t>
         <t t-if="props.field.type == 'float' || props.field.type == 'integer'">
             <NumberField t-props="props" />
