@@ -68,7 +68,10 @@ define("jowebutils.querystring", ["require", "exports"], function (require, expo
     function objectToQueryString(params) {
         if (!params)
             return '';
-        return Object.keys(params).map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(params[key])).join('&');
+        return Object.keys(params).map((key) => {
+            const value = params[key] !== null ? params[key] : '';
+            return encodeURIComponent(key) + '=' + encodeURIComponent(value);
+        }).join('&');
     }
     exports.objectToQueryString = objectToQueryString;
     function getQueryStringValue(param) {

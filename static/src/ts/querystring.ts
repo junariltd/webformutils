@@ -2,9 +2,10 @@
 
 export function objectToQueryString(params: any) {
     if (!params) return '';
-    return Object.keys(params).map((key) =>
-        encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
-    ).join('&');
+    return Object.keys(params).map((key) => {
+        const value = params[key] !== null ? params[key] : '';
+        return encodeURIComponent(key) + '=' + encodeURIComponent(value);
+    }).join('&');
 }
 
 export function getQueryStringValue(param: string) {
