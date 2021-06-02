@@ -35,6 +35,10 @@ declare module "jowebutils.querystring" {
     export function getURLQueryStringValue(url: string, param: string): string | null;
     export function getAllQueryStringValues(): URLSearchParams;
 }
+/// <amd-module name="jowebutils.utils" />
+declare module "jowebutils.utils" {
+    export function getCurrentUrlWithoutHost(): string;
+}
 /// <amd-module name="jowebutils.forms.Attachments" />
 declare module "jowebutils.forms.Attachments" {
     import { Component } from '@odoo/owl';

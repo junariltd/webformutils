@@ -87,6 +87,17 @@ define("jowebutils.querystring", ["require", "exports"], function (require, expo
     }
     exports.getAllQueryStringValues = getAllQueryStringValues;
 });
+///<amd-module name='jowebutils.utils'/>
+define("jowebutils.utils", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getCurrentUrlWithoutHost = void 0;
+    // Returns the current URL starting from the first "/"
+    function getCurrentUrlWithoutHost() {
+        return location.pathname + location.search + location.hash;
+    }
+    exports.getCurrentUrlWithoutHost = getCurrentUrlWithoutHost;
+});
 ///<amd-module name='jowebutils.forms.Attachments'/>
 define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], function (require, exports, owl_2) {
     "use strict";
