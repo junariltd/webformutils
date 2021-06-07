@@ -38,6 +38,8 @@ declare module "jowebutils.querystring" {
 /// <amd-module name="jowebutils.utils" />
 declare module "jowebutils.utils" {
     export function getCurrentUrlWithoutHost(): string;
+    export function patch(C: any, patchName: string, patch: any): void;
+    export function unpatch(C: any, patchName: string): void;
 }
 /// <amd-module name="jowebutils.forms.Attachments" />
 declare module "jowebutils.forms.Attachments" {

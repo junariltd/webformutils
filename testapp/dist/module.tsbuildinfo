@@ -1,0 +1,40 @@
+{
+  "bundle": {
+    "commonSourceDirectory": "../..",
+    "sourceFiles": [
+      "../../static/src/ts/owl_env.ts",
+      "../../static/src/ts/forms/Fields.ts",
+      "../../static/src/ts/forms/Form.ts",
+      "../../static/src/ts/forms/Attachments.ts",
+      "../../static/src/ts/widgets/Tabs.ts",
+      "../src/pages/FormTester.ts",
+      "../src/app.ts",
+      "../../static/src/ts/widgets/Table.ts",
+      "../src/pages/WidgetsTester.ts",
+      "../../static/src/ts/owl_app.ts",
+      "../../static/src/ts/querystring.ts",
+      "../../static/src/ts/forms/TagInputField.ts",
+      "../../static/src/ts/forms/utils.ts",
+      "../../static/src/ts/widgets/NavBar.ts"
+    ],
+    "js": {
+      "sections": [
+        {
+          "pos": 0,
+          "end": 44454,
+          "kind": "text"
+        }
+      ]
+    },
+    "dts": {
+      "sections": [
+        {
+          "pos": 0,
+          "end": 9904,
+          "kind": "text"
+        }
+      ]
+    }
+  },
+  "version": "4.2.3"
+}

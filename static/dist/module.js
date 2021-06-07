@@ -91,12 +91,70 @@ define("jowebutils.querystring", ["require", "exports"], function (require, expo
 define("jowebutils.utils", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getCurrentUrlWithoutHost = void 0;
+    exports.unpatch = exports.patch = exports.getCurrentUrlWithoutHost = void 0;
     // Returns the current URL starting from the first "/"
     function getCurrentUrlWithoutHost() {
         return location.pathname + location.search + location.hash;
     }
     exports.getCurrentUrlWithoutHost = getCurrentUrlWithoutHost;
+    // OWL Monkey-patching functions (in Odoo 14+ these are built in to the framework)
+    // From https://github.com/odoo/owl/pull/314/commits/46095b7a967e75ee20a87cac018c540ace1f8447
+    const patchMap = new WeakMap();
+    function patch(C, patchName, patch) {
+        let metadata = patchMap.get(C.prototype);
+        if (!metadata) {
+            metadata = {
+                origMethods: {},
+                patches: {},
+                current: []
+            };
+            patchMap.set(C.prototype, metadata);
+        }
+        const proto = C.prototype;
+        if (metadata.patches[patchName]) {
+            throw new Error(`Patch [\${patchName}] already exists`);
+        }
+        metadata.patches[patchName] = patch;
+        applyPatch(proto, patch);
+        metadata.current.push(patchName);
+        function applyPatch(proto, patch) {
+            Object.keys(patch).forEach(function (methodName) {
+                const method = patch[methodName];
+                if (typeof method === "function") {
+                    const original = proto[methodName];
+                    if (!(methodName in metadata.origMethods)) {
+                        metadata.origMethods[methodName] = original;
+                    }
+                    proto[methodName] = function (...args) {
+                        this._super = original;
+                        return method.call(this, ...args);
+                    };
+                }
+            });
+        }
+    }
+    exports.patch = patch;
+    // we define here an unpatch function.  This is mostly useful if we want to
+    // remove a patch.  For example, for testing purposes
+    function unpatch(C, patchName) {
+        const proto = C.prototype;
+        let metadata = patchMap.get(proto);
+        if (!metadata) {
+            return;
+        }
+        patchMap.delete(proto);
+        // reset to original
+        for (let k in metadata.origMethods) {
+            proto[k] = metadata.origMethods[k];
+        }
+        // apply other patches
+        for (let name of metadata.current) {
+            if (name !== patchName) {
+                patch(C, name, metadata.patches[name]);
+            }
+        }
+    }
+    exports.unpatch = unpatch;
 });
 ///<amd-module name='jowebutils.forms.Attachments'/>
 define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], function (require, exports, owl_2) {
