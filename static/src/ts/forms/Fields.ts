@@ -16,6 +16,7 @@ export interface IFieldMeta {
     string?: string;
     placeholder?: string;
     help?: string;
+    tooltip?: string;
     invisible?: boolean;
     required?: boolean;
     readonly?: boolean;
