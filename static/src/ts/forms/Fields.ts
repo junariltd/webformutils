@@ -382,13 +382,12 @@ TextField.template = tags.xml /* xml */ `
                 class="form-control"
                 t-att-name="props.field.name"
                 t-att-required="props.field.required"
-                t-att-value="formattedValue"
                 t-on-change="onChange"
                 t-att-placeholder="props.field.placeholder"
                 t-att-disabled="props.field.readonly"
                 onInput="this.parentNode.dataset.replicatedValue = this.value"
                 rows="5"
-            />
+            ><t t-raw="rawValue" /></textarea>
         </div>
         <div
             t-if="form.mode == 'view'"
