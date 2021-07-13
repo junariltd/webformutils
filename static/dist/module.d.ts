@@ -48,15 +48,16 @@ declare module "jowebutils.forms.Attachments" {
     export interface IAttachmentsProps {
         buttonLabel: string;
         buttonClass: string;
+        onFilesAdded: (files: File[]) => void;
+        onFileRemoved: (index: Number) => void;
+        attachments: File[];
         maxAttachments: number;
     }
     export interface IAttachmentsState {
         controlId: string;
-        fileNames: string[];
     }
     export class Attachments extends Component<IAttachmentsProps, IOWLEnv> {
-        state: IAttachmentsState;
-        files: File[];
+        controlId: string;
         constructor();
         onFileInputChange(ev: any): void;
         onRemove(ev: any): void;
