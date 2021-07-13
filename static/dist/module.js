@@ -164,38 +164,29 @@ define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], func
     class Attachments extends owl_2.Component {
         constructor() {
             super(...arguments);
-            this.state = owl_2.hooks.useState({
-                controlId: 'attachments' + Math.floor(Math.random() * 1000),
-                fileNames: []
-            });
-            this.files = [];
+            this.controlId = 'attachments' + Math.floor(Math.random() * 1000);
         }
         onFileInputChange(ev) {
             const maxAttachments = this.props.maxAttachments || 10;
             if (ev.target && ev.target.files && ev.target.files.length) {
-                if (this.state.fileNames.length + ev.target.files.length > maxAttachments) {
+                if (this.props.attachments.length + ev.target.files.length > maxAttachments) {
                     // TODO: something better!
                     alert('You may only upload up to ' + maxAttachments + ' files.');
                 }
                 else {
-                    const fileNames = Array.from(ev.target.files).map((f) => f.name);
-                    this.state.fileNames.push(...fileNames);
-                    this.files.push(...ev.target.files);
-                    ev.target.value = '';
-                    this.trigger('files-changed', {
-                        files: this.files
-                    });
+                    this.props.onFilesAdded(Array.from(ev.target.files));
                 }
             }
         }
         onRemove(ev) {
             const index = ev.target.dataset['index'];
             if (index) {
-                this.state.fileNames.splice(index, 1);
-                this.files.splice(index, 1);
-                this.trigger('files-changed', {
-                    files: this.files
-                });
+                // this.state.fileNames.splice(index, 1);
+                // this.files.splice(index, 1);
+                // this.trigger('files-changed', {
+                //     files: this.files
+                // });
+                this.props.onFileRemoved(index);
             }
         }
     }
@@ -205,7 +196,7 @@ define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], func
     <div>
         <div class="row">
             <div class="joweb-attachments-file col-6 mb-4"
-                t-foreach="files" t-as="file" t-key="file_index">
+                t-foreach="props.attachments" t-as="file" t-key="file_index">
                 <div class="card" style=" background-color: #EEEEEE !important;">
                     <div class="card-body" style="background-color: #EEEEEE !important;">
                         <t t-esc="file.name" />
@@ -221,11 +212,11 @@ define("jowebutils.forms.Attachments", ["require", "exports", "@odoo/owl"], func
         </div>
         <div class="row">
             <div class="col-12">
-                <label t-att-for="state.controlId"
+                <label t-att-for="controlId"
                     t-att-class="props.buttonClass ? props.buttonClass : 'btn btn-primary mt-2'"
                     t-esc="props.buttonLabel ? props.buttonLabel : 'Add Attachment(s)'" />
                 <input
-                    t-att-id="state.controlId"
+                    t-att-id="controlId"
                     type="file"
                     class="form-control-file"
                     t-on-change="onFileInputChange"
