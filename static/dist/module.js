@@ -251,7 +251,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
                 this.env.formContext = {};
             }
             else if (this.env.formContext[this.name]) {
-                throw new Error('Duplicate form declared. Use the "name" property to uniquely identify forms.');
+                console.warn(`Duplicate <Form /> declared "${this.name}". Use the "name" property to uniquely identify forms.`);
             }
             const formContextContainer = new owl_3.Context(formContextData);
             this.env.formContext[this.name] = formContextContainer;
