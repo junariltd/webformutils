@@ -453,18 +453,14 @@ SelectField.template = tags.xml /* xml */ `
             class="form-control"
             t-att-name="props.field.name"
             t-att-required="props.field.required"
-            t-att-value="formattedValue"
+            t-att-value="Array.isArray(rawValue) &amp;&amp; rawValue.length ? rawValue[0] : rawValue"
             t-on-change="onChange"
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         >
             <option value=""></option>
             <t t-foreach="props.field.selection || []" t-as="sel_option">
-                <option
-                    t-att-value="sel_option[0]"
-                    t-att-selected="sel_option[0] == rawValue ? 'selected' :
-                        rawValue != null &amp;&amp; rawValue.length == 2 &amp;&amp; sel_option[0] == rawValue[0] ? 'selected' : false"
-                ><t t-esc="sel_option[1]"/></option>
+                <option t-att-value="sel_option[0]"><t t-esc="sel_option[1]"/></option>
             </t>
         </select>
         <div
