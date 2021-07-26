@@ -18,7 +18,7 @@ App.template = tags.xml`<RouteComponent />`;
 
 export interface OWLAppDefinition {
     selector: string;
-    routes: Route[];
+    routes: Partial<Route>[];
     xmlDependencies?: string[];
 }
 

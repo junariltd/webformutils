@@ -23,7 +23,7 @@ declare module "jowebutils.owl_app" {
     import { Route } from '@odoo/owl/dist/types/router/router';
     export interface OWLAppDefinition {
         selector: string;
-        routes: Route[];
+        routes: Partial<Route>[];
         xmlDependencies?: string[];
     }
     export function createOWLApp(appDef: OWLAppDefinition): any;
