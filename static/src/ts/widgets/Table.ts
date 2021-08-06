@@ -7,6 +7,8 @@ import { IOWLEnv } from '../owl_env';
 export interface ITableColumn {
     name: string;
     string: string;
+    sortable: boolean;
+    sorted: 'asc' | 'desc';
 }
 
 export interface ITableProps {
@@ -31,12 +33,29 @@ export class Table extends Component<ITableProps, IOWLEnv> {
         });
     }
 
+    onClickHeader(ev: any) {
+        ev.preventDefault();
+        const colIndex = ev.target.closest('th').dataset.index;
+        const col = this.props.cols[colIndex]
+        if(col.sortable){
+            this.trigger('col-header-clicked', {
+                col: col
+            })
+        }
+    }
 }
 Table.template = tags.xml /* xml */ `
     <div class="table-responsive border rounded border-top-0">
         <table class="table rounded mb-0 bg-white o_portal_my_doc_table jowebutils-table">
             <tr>
-                <th t-foreach="props.cols" t-as="col" t-key="col.name"><t t-esc="col.string" /></th>
+                <th t-foreach="props.cols" t-as="col" t-key="col.name" 
+                    t-att-class="col.sortable ? 'cursor-pointer': ''"
+                    t-on-click="onClickHeader"
+                    t-att-data-index="col_index">
+                    <t t-esc="col.string" /> 
+                    <i t-if="col.sorted == 'desc'" class="fa fa-sort-desc ml-2"></i>
+                    <i t-if="col.sorted == 'asc'" class="fa fa-sort-asc ml-2"></i>
+                </th>
             </tr>
             <tr t-foreach="props.data" t-as="row">
                 <td t-foreach="props.cols" t-as="col" t-key="col.name">

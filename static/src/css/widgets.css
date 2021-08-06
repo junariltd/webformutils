@@ -39,3 +39,7 @@
 .o_owl_dialog .modal-body {
     background: #fff;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}

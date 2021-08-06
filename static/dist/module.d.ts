@@ -233,6 +233,8 @@ declare module "jowebutils.widgets.Table" {
     export interface ITableColumn {
         name: string;
         string: string;
+        sortable: boolean;
+        sorted: 'asc' | 'desc';
     }
     export interface ITableProps {
         cols: ITableColumn[];
@@ -241,6 +243,7 @@ declare module "jowebutils.widgets.Table" {
     export class Table extends Component<ITableProps, IOWLEnv> {
         formatValue(value: any): any;
         onClickRow(ev: any): void;
+        onClickHeader(ev: any): void;
     }
 }
 /// <amd-module name="jowebutils.widgets.Tabs" />
