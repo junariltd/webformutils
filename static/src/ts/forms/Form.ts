@@ -30,6 +30,7 @@ export interface IFormFile {
 export interface IFormProps {
     name?: string;
     mode?: IFormMode;
+    formClass?: string;
     initialValues?: IValues;
 }
 
@@ -121,7 +122,7 @@ export class Form extends Component<IFormProps, IOWLEnv> {
 
 }
 Form.template = tags.xml /* xml */ `
-    <form t-on-submit="onSubmit">
+    <form t-on-submit="onSubmit" t-att-class="props.formClass || ''">
         <t t-slot="default" />
     </form>
 `
