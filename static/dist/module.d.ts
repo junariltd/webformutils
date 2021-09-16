@@ -94,6 +94,7 @@ declare module "jowebutils.forms.Form" {
     export interface IFormProps {
         name?: string;
         mode?: IFormMode;
+        formClass?: string;
         initialValues?: IValues;
     }
     export class Form extends Component<IFormProps, IOWLEnv> {
@@ -133,10 +134,14 @@ declare module "jowebutils.forms.Fields" {
         required?: boolean;
         readonly?: boolean;
         selection?: SelectionOption[];
+        options?: {
+            [optionName: string]: any;
+        };
     }
     export interface IFieldProps {
         form?: string;
         field: IFieldMeta;
+        labelPosition?: 'left' | 'above' | 'none';
     }
     export type ValidationError = string;
     export interface IFieldComponent {

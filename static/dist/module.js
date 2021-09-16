@@ -302,7 +302,7 @@ define("jowebutils.forms.Form", ["require", "exports", "@odoo/owl"], function (r
     }
     exports.Form = Form;
     Form.template = owl_3.tags.xml /* xml */ `
-    <form t-on-submit="onSubmit">
+    <form t-on-submit="onSubmit" t-att-class="props.formClass || ''">
         <t t-slot="default" />
     </form>
 `;
@@ -645,6 +645,7 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             <input
                 t-if="form.mode == 'edit'"
                 type="checkbox"
+                t-att-id="props.field.name"
                 t-att-name="props.field.name"
                 t-att-required="props.field.required"
                 t-att-value="true"
@@ -676,7 +677,9 @@ define("jowebutils.forms.Fields", ["require", "exports", "@odoo/owl"], function 
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         >
-            <option value=""></option>
+            <option
+                t-if="props.field.options &amp;&amp; !props.field.options.noBlankOption"
+                value=""></option>
             <t t-foreach="props.field.selection || []" t-as="sel_option">
                 <option t-att-value="sel_option[0]"><t t-esc="sel_option[1]"/></option>
             </t>
@@ -897,7 +900,6 @@ define("jowebutils.widgets.Table", ["require", "exports", "@odoo/owl"], function
         }
         onClickHeader(ev) {
             ev.preventDefault();
-            console.log(ev);
             const colIndex = ev.target.closest('th').dataset.index;
             const col = this.props.cols[colIndex];
             if (col.sortable) {

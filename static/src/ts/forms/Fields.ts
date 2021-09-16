@@ -21,11 +21,13 @@ export interface IFieldMeta {
     required?: boolean;
     readonly?: boolean;
     selection?: SelectionOption[];
+    options?: { [optionName: string]: any; };
 }
 
 export interface IFieldProps {
     form?: string;
     field: IFieldMeta;
+    labelPosition?: 'left' | 'above' | 'none';
 }
 
 export type ValidationError = string;
@@ -429,6 +431,7 @@ BooleanField.template = tags.xml /* xml */ `
             <input
                 t-if="form.mode == 'edit'"
                 type="checkbox"
+                t-att-id="props.field.name"
                 t-att-name="props.field.name"
                 t-att-required="props.field.required"
                 t-att-value="true"
@@ -458,7 +461,9 @@ SelectField.template = tags.xml /* xml */ `
             t-att-placeholder="props.field.placeholder"
             t-att-disabled="props.field.readonly"
         >
-            <option value=""></option>
+            <option
+                t-if="props.field.options &amp;&amp; !props.field.options.noBlankOption"
+                value=""></option>
             <t t-foreach="props.field.selection || []" t-as="sel_option">
                 <option t-att-value="sel_option[0]"><t t-esc="sel_option[1]"/></option>
             </t>
